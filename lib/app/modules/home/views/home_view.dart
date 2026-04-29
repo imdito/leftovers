@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -52,6 +53,13 @@ class HomeView extends GetView<HomeController> {
             _buildSectionHeader("🚨 Hampir Basi!", "Lihat Semua"),
             const SizedBox(height: 12),
             _buildCriticalItemsList(),
+
+            const SizedBox(height: 32),
+            _buildSectionHeader("🎮 Mini Games", "Mainkan"),
+            const SizedBox(height: 12),
+            _buildMiniGameSection(),
+            const SizedBox(height: 70),
+
           ],
         ),
       ),
@@ -188,8 +196,31 @@ class HomeView extends GetView<HomeController> {
         _foodItemCard("Susu Cair", "Tersisa 2 Hari", "Dairy", Colors.orange),
         const SizedBox(height: 12),
         _foodItemCard("Sayur Bayam", "Tersisa 3 Hari", "Sayur", Colors.orange),
-        const SizedBox(height: 80), // Memberi ruang agar list tidak tertutup FAB
       ],
+    );
+  }
+
+  Widget _buildMiniGameSection() {
+    return Container(
+      width: double.infinity,
+      height: 400, // Kamu bisa menyesuaikan tingginya agar pas di layar
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      // Menggunakan Clip.hardEdge agar webview tidak keluar dari border radius lengkung
+      clipBehavior: Clip.hardEdge,
+      child: WebViewWidget(
+        controller: controller.webViewController,
+      ),
     );
   }
 
