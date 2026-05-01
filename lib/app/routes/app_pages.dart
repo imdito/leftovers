@@ -6,6 +6,8 @@ import '../modules/auth/register/bindings/register_binding.dart';
 import '../modules/auth/register/views/auth_register_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/inventory/bindings/inventory_binding.dart';
+import '../modules/inventory/views/inventory_view.dart';
 
 part 'app_routes.dart';
 
@@ -29,6 +31,11 @@ class AppPages {
       name: _Paths.AUTH_REGISTER,
       page: () => const AuthRegisterView(),
       binding: RegisterBinding(),
+    ),
+    GetPage(
+      name: _Paths.INVENTORY,
+      page: () => const InventoryView(),
+      binding: InventoryBinding(),
     ),
   ];
 }

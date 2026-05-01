@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../controllers/home_controller.dart';
 
@@ -105,14 +106,18 @@ class HomeView extends GetView<HomeController> {
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
           const SizedBox(height: 8),
-          const Text(
-            "Rp 150.000", // Nanti ini diganti dengan variabel Obx dari controller
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Obx(() {
+            // Karena kita sudah punya package intl, kita pakai formatter
+            final formatCurrency = NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
+            return Text(
+              formatCurrency.format(controller.totalSavedMoney.value),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          }),
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -142,31 +147,36 @@ class HomeView extends GetView<HomeController> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _actionButton(Icons.kitchen, "Kulkas", Colors.blue),
-        _actionButton(Icons.menu_book, "Resep", Colors.orange),
-        _actionButton(Icons.map_outlined, "Donasi", Colors.purple),
-        _actionButton(Icons.person_outline, "Profil", Colors.teal),
+        _actionButton(Icons.kitchen, "Kulkas", Colors.blue, "/inventory"),
+        _actionButton(Icons.menu_book, "Resep", Colors.orange, "/recipes"),
+        _actionButton(Icons.map_outlined, "Donasi", Colors.purple, "/donation"),
+        _actionButton(Icons.person_outline, "Profil", Colors.teal, "/profile"),
       ],
     );
   }
 
-  Widget _actionButton(IconData icon, String label, Color color) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            shape: BoxShape.circle,
+  Widget _actionButton(IconData icon, String label, Color color, String route) {
+    return InkWell(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 28),
           ),
-          child: Icon(icon, color: color, size: 28),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-        ),
-      ],
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+      onTap: (){
+        Get.toNamed(route);
+      },
     );
   }
 
@@ -189,15 +199,46 @@ class HomeView extends GetView<HomeController> {
 
   // Komponen 4: Daftar Makanan Kritis (Mockup Sementara)
   Widget _buildCriticalItemsList() {
-    return Column(
-      children: [
-        _foodItemCard("Ayam Mentah", "Tersisa 1 Hari", "Daging", Colors.redAccent),
-        const SizedBox(height: 12),
-        _foodItemCard("Susu Cair", "Tersisa 2 Hari", "Dairy", Colors.orange),
-        const SizedBox(height: 12),
-        _foodItemCard("Sayur Bayam", "Tersisa 3 Hari", "Sayur", Colors.orange),
-      ],
-    );
+    return Obx(() {
+      // Jika tidak ada makanan yang mepet kedaluwarsa
+      if (controller.criticalItems.isEmpty) {
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.green.shade50,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.green.shade200),
+          ),
+          child: const Column(
+            children: [
+              Icon(Icons.check_circle_outline, color: Colors.green, size: 40),
+              SizedBox(height: 8),
+              Text(
+                "Aman! Tidak ada makanan yang mau basi.",
+                style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        );
+      }
+
+      // Jika ada makanan kritis, render daftarnya
+      return Column(
+        children: controller.criticalItems.map((item) {
+          final diff = item.expirationDate.difference(DateTime.now()).inDays;
+
+          // Penentuan teks dan warna secara dinamis
+          String status = diff == 0 ? "Kedaluwarsa Hari Ini!" : "Tersisa $diff Hari";
+          Color statusColor = diff == 0 ? Colors.redAccent : Colors.orange;
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: _foodItemCard(item.name, status, item.category, statusColor),
+          );
+        }).toList(), // Ubah list of Widget menjadi children
+      );
+    });
   }
 
   Widget _buildMiniGameSection() {
