@@ -95,7 +95,7 @@ app.post('/api/login', async (req, res) => {
         const token = jwt.sign(
             { id: user.id, email: user.email },
             process.env.JWT_SECRET,
-            { expiresIn: '7d' } // Token berlaku 7 hari
+            { expiresIn: '1d' } // Token berlaku 7 hari
         );
 
         res.json({

@@ -5,6 +5,8 @@ import 'package:hive/hive.dart';
 import 'package:leftovers/app/data/models/inventory_model.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../../auth/services/auth_service.dart';
+
 class HomeController extends GetxController {
   late final WebViewController webViewController;
   final Box<InventoryItem> inventoryBox = Hive.box<InventoryItem>('inventoryBox');
@@ -36,6 +38,14 @@ class HomeController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+  }
+
+  void checkSecurity() {
+    final authService = Get.find<AuthService>();
+    if (!authService.isSessionValid) {
+      Get.offAllNamed('/login');
+      Get.snackbar('Terkunci', 'Sesi berakhir, silakan login kembali.');
+    }
   }
 
   void loadHomeData() {
