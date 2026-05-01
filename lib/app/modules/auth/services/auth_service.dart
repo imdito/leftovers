@@ -3,6 +3,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:local_auth/local_auth.dart';
 
+import '../../../routes/app_pages.dart';
+
 class AuthService extends GetxService {
   final _box = Hive.box('sessionbox');
   final LocalAuthentication _auth = LocalAuthentication();
@@ -54,6 +56,6 @@ class AuthService extends GetxService {
   // --- LOGOUT ---
   void logout() {
     _box.clear();
-    Get.offAllNamed('/login');
+    Get.offAllNamed(Routes.AUTH_LOGIN);
   }
 }

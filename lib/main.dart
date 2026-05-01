@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -10,12 +11,16 @@ import 'app/routes/app_pages.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await dotenv.load(fileName: ".env");
+
   await Hive.initFlutter();
   Hive.registerAdapter(InventoryItemAdapter());
   await Hive.openBox<InventoryItem>('inventoryBox');
   await Hive.openBox('sessionBox');
+
+
   final authService = Get.put(AuthService());
-  print("Session Valid: ${authService.isSessionValid}");
+
   runApp(
     GetMaterialApp(
       title: "Application",
