@@ -1,22 +1,31 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:leftovers/app/data/models/inventory_model.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../../../data/services/notification_service.dart';
 import '../../auth/services/auth_service.dart';
 
 class HomeController extends GetxController {
   late final WebViewController webViewController;
   final Box<InventoryItem> inventoryBox = Hive.box<InventoryItem>('inventoryBox');
   var criticalItems = <InventoryItem>[].obs;
+  final notificationService = Get.put(NotificationService());
   var totalSavedMoney = 0.obs;
   @override
   void onInit() {
     super.onInit();
     // 1. Muat data saat halaman Home pertama kali dibuka
     loadHomeData();
+    notificationService.init();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+
+      notificationService.requestPermission();
+    });
 
     // 2. Dengarkan setiap perubahan di dalam Hive
     inventoryBox.watch().listen((event) {
