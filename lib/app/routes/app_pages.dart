@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:leftovers/app/modules/scan/views/scan_view.dart';
 
 import '../modules/auth/login/bindings/login_binding.dart';
 import '../modules/auth/login/views/auth_login_view.dart';
@@ -10,6 +11,7 @@ import '../modules/inventory/bindings/inventory_binding.dart';
 import '../modules/inventory/views/inventory_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
+import '../modules/scan/bindings/scan_bindings.dart';
 
 part 'app_routes.dart';
 
@@ -43,6 +45,11 @@ class AppPages {
       name: _Paths.PROFILE,
       page: () => const ProfileView(),
       binding: ProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.SCAN,
+      page: () => const ScanView(),
+      binding: ScanBinding(),
     ),
   ];
 }

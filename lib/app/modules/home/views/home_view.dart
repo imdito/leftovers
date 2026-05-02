@@ -70,8 +70,7 @@ class HomeView extends GetView<HomeController> {
         icon: const Icon(Icons.document_scanner_outlined, color: Colors.white),
         label: const Text("Scan Makanan", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         onPressed: () {
-          // TODO: Navigasi ke Camera Scanner Page
-          Get.snackbar("Kamera", "Fitur AI Scanner akan segera hadir!");
+          Get.toNamed("/scan");
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
