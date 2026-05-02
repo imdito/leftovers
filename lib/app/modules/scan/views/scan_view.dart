@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/scan_controller.dart';
+import '../../inventory/controllers/inventory_controller.dart';
+import '../../inventory/views/add_inventory_bottom_sheet.dart';
 
 class ScanView extends GetView<ScanController> {
   const ScanView({super.key});
@@ -46,9 +48,9 @@ class ScanView extends GetView<ScanController> {
               () => ElevatedButton.icon(
                 onPressed:
                     (controller.isLoading.value ||
-                        controller.imageFile.value == null)
-                    ? null // Nonaktifkan jika sedang loading atau gambar belum ada
-                    : controller.scanFood,
+                            controller.imageFile.value == null)
+                        ? null // Nonaktifkan jika sedang loading atau gambar belum ada
+                        : controller.scanFood,
                 icon: const Icon(Icons.document_scanner_outlined),
                 label: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -95,36 +97,47 @@ class ScanView extends GetView<ScanController> {
                   ),
                   const SizedBox(height: 12),
                   ...controller.detectedItems.map(
-                    (item) => Card(
-                      elevation:
-                          0, // Menggunakan elevasi 0 dan border untuk tampilan lebih clean
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: Colors.grey.shade200),
-                      ),
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: ListTile(
-                        leading: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.restaurant_menu,
-                            color: Colors.green,
-                            size: 20,
-                          ),
+                    (item) {
+                      final raw = item.toString();
+                      final name = _cleanDetectedFoodName(raw);
+
+                      return Card(
+                        elevation:
+                            0, // Menggunakan elevasi 0 dan border untuk tampilan lebih clean
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(color: Colors.grey.shade200),
                         ),
-                        title: Text(
-                          item.toString(),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: ListTile(
+                          onTap: () => _openAddInventoryBottomSheet(
+                            context,
+                            initialName: name,
                           ),
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.restaurant_menu,
+                              color: Colors.green,
+                              size: 20,
+                            ),
+                          ),
+                          title: Text(
+                            raw,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          subtitle: const Text("Tap untuk masukkan ke kulkas"),
+                          trailing: const Icon(Icons.add),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ],
               );
@@ -159,6 +172,54 @@ class ScanView extends GetView<ScanController> {
   }
 
   // --- WIDGET BANTUAN ---
+
+  String _cleanDetectedFoodName(String raw) {
+    var name = raw.trim();
+
+    // Hapus confidence semacam "(95%)" atau "(0.95)" jika ada.
+    final idxParen = name.indexOf('(');
+    if (idxParen > 0) {
+      name = name.substring(0, idxParen).trim();
+    }
+
+    // Hapus trailing separator umum
+    name = name.replaceAll(RegExp(r'[-,:]+$'), '').trim();
+
+    return name;
+  }
+
+  void _openAddInventoryBottomSheet(
+    BuildContext context, {
+    required String initialName,
+  }) {
+    if (initialName.trim().isEmpty) {
+      Get.snackbar(
+        'Gagal',
+        'Item hasil scan tidak valid.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    // Ambil atau buat InventoryController supaya bottom sheet bisa memakai controller yang sama.
+    final InventoryController inventoryController = Get.isRegistered<InventoryController>()
+        ? Get.find<InventoryController>()
+        : Get.put(InventoryController());
+
+    // Prefill form
+    inventoryController.nameController.text = initialName;
+    inventoryController.selectedDate.value = null;
+    inventoryController.resetQuantity();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return const AddInventoryBottomSheet();
+      },
+    );
+  }
 
   void _showPickerOptions(BuildContext context) {
     Get.bottomSheet(
