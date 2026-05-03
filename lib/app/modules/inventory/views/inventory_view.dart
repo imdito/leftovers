@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // Buka terminal dan jalankan: flutter pub add intl
 import 'package:leftovers/app/modules/inventory/views/add_inventory_bottom_sheet.dart';
+import 'package:leftovers/app/routes/app_pages.dart';
 import '../controllers/inventory_controller.dart';
 
 class InventoryView extends GetView<InventoryController> {
@@ -81,66 +82,69 @@ class InventoryView extends GetView<InventoryController> {
                   itemBuilder: (context, index) {
                     final item = controller.filteredInventoryItems[index];
 
-                  // Hitung sisa hari
-                  final difference = item.expirationDate.difference(DateTime.now()).inDays;
-                  Color statusColor = Colors.green;
+                    // Hitung sisa hari
+                    final difference = item.expirationDate.difference(DateTime.now()).inDays;
+                    Color statusColor = Colors.green;
 
-                  if (difference < 0) {
-                    statusColor = Colors.grey;
-                  } else if (difference <= 2) {
-                    statusColor = Colors.redAccent;
-                  } else if (difference <= 5) {
-                    statusColor = Colors.orange;
-                  }
+                    if (difference < 0) {
+                      statusColor = Colors.grey;
+                    } else if (difference <= 2) {
+                      statusColor = Colors.redAccent;
+                    } else if (difference <= 5) {
+                      statusColor = Colors.orange;
+                    }
 
-                  return Card(
-                    elevation: 0,
-                    margin: const EdgeInsets.only(bottom: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      leading: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(Icons.fastfood, color: statusColor), // Bisa dibuat dinamis sesuai kategori nanti
-                      ),
-                      title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 4),
-                          Text(item.category, style: const TextStyle(fontSize: 12)),
-                          Text(
-                            'Kedaluwarsa: ${DateFormat('dd MMM yyyy').format(item.expirationDate)}',
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                        onPressed: () {
-                          // Tampilkan dialog konfirmasi sebelum menghapus
-                          Get.defaultDialog(
-                            title: "Hapus Makanan",
-                            middleText: "Yakin ingin membuang ${item.name}?",
-                            textConfirm: "Hapus",
-                            textCancel: "Batal",
-                            confirmTextColor: Colors.white,
-                            buttonColor: Colors.redAccent,
-                            onConfirm: () {
-                              controller.deleteInventoryItem(item);
-                              Get.back(); // Tutup dialog
-                            },
-                          );
+                    return Card(
+                      elevation: 0,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        onTap: () {
+                          Get.toNamed(Routes.INVENTORY_DETAIL, arguments: item);
                         },
+                        leading: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: statusColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(Icons.fastfood, color: statusColor), // Bisa dibuat dinamis sesuai kategori nanti
+                        ),
+                        title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 4),
+                            Text(item.category, style: const TextStyle(fontSize: 12)),
+                            Text(
+                              'Kedaluwarsa: ${DateFormat('dd MMM yyyy').format(item.expirationDate)}',
+                              style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                          onPressed: () {
+                            // Tampilkan dialog konfirmasi sebelum menghapus
+                            Get.defaultDialog(
+                              title: "Hapus Makanan",
+                              middleText: "Yakin ingin membuang ${item.name}?",
+                              textConfirm: "Hapus",
+                              textCancel: "Batal",
+                              confirmTextColor: Colors.white,
+                              buttonColor: Colors.redAccent,
+                              onConfirm: () {
+                                controller.deleteInventoryItem(item);
+                                Get.back(); // Tutup dialog
+                              },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
+                    );
+                  },
+                );
               }),
             ),
           ],

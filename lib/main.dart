@@ -18,6 +18,7 @@ Future<void> main() async {
   Hive.registerAdapter(InventoryItemAdapter());
   await Hive.openBox<InventoryItem>('inventoryBox');
   await Hive.openBox('sessionBox');
+  await Hive.openBox('gamificationBox');
 
   final authService = Get.put(AuthService());
 

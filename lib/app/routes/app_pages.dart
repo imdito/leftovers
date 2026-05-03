@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:leftovers/app/modules/scan/views/scan_view.dart';
-
 import '../modules/auth/login/bindings/login_binding.dart';
 import '../modules/auth/login/views/auth_login_view.dart';
 import '../modules/auth/register/bindings/register_binding.dart';
@@ -9,6 +8,7 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/inventory/bindings/inventory_binding.dart';
 import '../modules/inventory/views/inventory_view.dart';
+import '../modules/inventory/views/item_detail_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/scan/bindings/scan_bindings.dart';
@@ -39,6 +39,11 @@ class AppPages {
     GetPage(
       name: _Paths.INVENTORY,
       page: () => const InventoryView(),
+      binding: InventoryBinding(),
+    ),
+    GetPage(
+      name: Routes.INVENTORY_DETAIL,
+      page: () => const ItemDetailView(),
       binding: InventoryBinding(),
     ),
     GetPage(

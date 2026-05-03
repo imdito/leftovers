@@ -5,11 +5,13 @@ import 'package:intl/intl.dart';
 import '../../../data/models/inventory_model.dart';
 import '../../../data/services/notification_service.dart';
 
-
 class InventoryController extends GetxController {
-
   // Inisialisasi Hive Box untuk InventoryItem
   final Box<InventoryItem> inventoryBox = Hive.box<InventoryItem>('inventoryBox');
+
+  // Box sederhana untuk data gamifikasi (uang terselamatkan + streak)
+  final Box gamificationBox = Hive.box('gamificationBox');
+
   var inventoryItems = <InventoryItem>[].obs;
   var filteredInventoryItems = <InventoryItem>[].obs;
 
@@ -27,6 +29,8 @@ class InventoryController extends GetxController {
   var filteredItems = <Map<String, dynamic>>[].obs;
   TextEditingController searchController = TextEditingController();
 
+  static const String _kSavedMoneyKey = 'savedMoney';
+  static const String _kStreakKey = 'streak';
 
   @override
   void onInit() {
@@ -35,7 +39,6 @@ class InventoryController extends GetxController {
   }
 
   void loadInventoryItems() {
-
     final items = inventoryBox.values.toList();
     items.sort((a, b) => a.expirationDate.compareTo(b.expirationDate));
 
@@ -69,6 +72,46 @@ class InventoryController extends GetxController {
     );
   }
 
+  Future<void> markCooked(InventoryItem item) async {
+    // Tambah uang terselamatkan (minimal: fixed per item, mengikuti HomeController)
+    final currentSaved = (gamificationBox.get(_kSavedMoneyKey) as int?) ?? 0;
+    final newSaved = currentSaved + 15000;
+    await gamificationBox.put(_kSavedMoneyKey, newSaved);
+
+    // Tambah streak (minimal: +1 setiap kali item dimasak)
+    final currentStreak = (gamificationBox.get(_kStreakKey) as int?) ?? 0;
+    await gamificationBox.put(_kStreakKey, currentStreak + 1);
+
+    await item.delete();
+    loadInventoryItems();
+
+    Get.back();
+    Get.snackbar(
+      'Mantap!',
+      '${item.name} ditandai sudah dimasak. +Rp 15.000 terselamatkan',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: CupertinoColors.systemGreen,
+      colorText: CupertinoColors.white,
+    );
+  }
+
+  Future<void> markWasted(InventoryItem item) async {
+    // Reset streak
+    await gamificationBox.put(_kStreakKey, 0);
+
+    await item.delete();
+    loadInventoryItems();
+
+    Get.back();
+    Get.snackbar(
+      'Sayang sekali',
+      '${item.name} terbuang. Streak di-reset',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: CupertinoColors.systemRed,
+      colorText: CupertinoColors.white,
+    );
+  }
+
   void setTanggal(DateTime date) {
     selectedDate.value = date;
   }
@@ -88,7 +131,7 @@ class InventoryController extends GetxController {
   }
 
   Future<void> addItem() async {
-    if(nameController.text.isEmpty || selectedDate.value == null){
+    if (nameController.text.isEmpty || selectedDate.value == null) {
       Get.snackbar(
         'Gagal',
         'Nama dan tanggal kedaluwarsa harus diisi!',
@@ -99,7 +142,7 @@ class InventoryController extends GetxController {
       return;
     }
 
-    if(selectedDate.value!.isBefore(DateTime.now())) {
+    if (selectedDate.value!.isBefore(DateTime.now())) {
       Get.snackbar(
         'Gagal',
         'Tanggal kedaluwarsa tidak boleh di masa lalu!',
@@ -110,7 +153,7 @@ class InventoryController extends GetxController {
       return;
     }
 
-    if(quantity.value <= 0) {
+    if (quantity.value <= 0) {
       Get.snackbar(
         'Gagal',
         'Kuantitas harus lebih dari 0!',
@@ -131,9 +174,9 @@ class InventoryController extends GetxController {
 
     await inventoryBox.add(newItem);
 
-    if(newItem.expirationDate.difference(DateTime.now()).inDays <= 3) {
+    if (newItem.expirationDate.difference(DateTime.now()).inDays <= 3) {
       notificationService.showInstantNotification(title: "Peringatan !", body: "${newItem.name} akan kedaluwarsa pada ${DateFormat('d MMM').format(newItem.expirationDate)}");
-    }else{
+    } else {
       notificationService.scheduleNotification(
         id: newItem.id,
         title: "Peringatan !",
@@ -151,13 +194,10 @@ class InventoryController extends GetxController {
       backgroundColor: CupertinoColors.systemGreen,
       colorText: CupertinoColors.white,
     );
-
-
   }
 
   @override
   void onClose() {
     super.onClose();
   }
-
 }

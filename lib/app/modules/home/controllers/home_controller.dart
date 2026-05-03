@@ -61,7 +61,7 @@ class HomeController extends GetxController {
     final allItems = inventoryBox.values.toList();
     final now = DateTime.now();
 
-    // --- GAMIFIKASI (LOGIKA SEMENTARA) ---
+    // --- GAMIFIKASI ---
     totalSavedMoney.value = allItems.length * 15000;
 
     // --- FILTER MAKANAN KRITIS ---
