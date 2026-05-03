@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -57,7 +58,7 @@ class LocationController extends GetxController {
 
   // Emulator Android: 10.0.2.2 → localhost komputer
   // Device fisik: IP komputer kamu, misal 192.168.1.x
-  static const _baseUrl = 'http://192.168.1.15:3000';
+  final String baseUrl = dotenv.env['EXPRESS_API_URL']!;
   static const _radiusMeters = 20000;
 
   @override
@@ -109,7 +110,7 @@ class LocationController extends GetxController {
     try {
       final categoryStr = _categoryToString(selectedCategory.value);
       final url = Uri.parse(
-        '$_baseUrl/places/nearby'
+        '$baseUrl/places/nearby'
         '?lat=${pos.latitude}'
         '&lng=${pos.longitude}'
         '&category=$categoryStr'

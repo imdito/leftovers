@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class AuthProvider {
-  final String baseUrl = 'http://192.168.1.15:3000/api';
+  final String baseUrl = dotenv.env['EXPRESS_API_URL']!;
+
 
   Future<http.Response> register(String name, String email, String password) {
     return http.post(

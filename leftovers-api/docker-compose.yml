@@ -20,6 +20,10 @@ services:
         condition: service_healthy
     command: npm run dev
 
+  api-backend:
+    image: leftovers-api-api
+    network_mode: "host"
+
   db:
     image: mysql:8.0
     ports:

@@ -214,10 +214,12 @@ app.put('/api/profile/update-photo', authenticateToken, async (req, res) => {
     }
 });
 
-
+app.get('/api/ping', (req, res) => {
+    res.json({ message: "Halo Dito! HP dan Server sudah terhubung dengan aman 🚀" });
+});
 
 // Jalankan Server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server Leftovers berjalan di port ${PORT}`);
 });

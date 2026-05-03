@@ -88,7 +88,7 @@ class HomeController extends GetxController {
     print("🚀 Memulai inisialisasi Easter Egg goyangan...");
     // Memulai pendeteksi goyangan secara otomatis
     shakeDetector = ShakeDetector.autoStart(
-      shakeThresholdGravity: 0.5, // Sensitivitas goyangan (makin kecil makin sensitif)
+      shakeThresholdGravity: 3, // Sensitivitas goyangan (makin kecil makin sensitif)
       onPhoneShake: (ShakeEvent event) {
         print("Hp Bergoyang");
         // Cegah dialog muncul berkali-kali kalau HP digoyang terus-terusan

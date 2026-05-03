@@ -10,10 +10,6 @@ abstract class Routes {
   static const INVENTORY_DETAIL = _Paths.INVENTORY + _Paths.DETAIL;
   static const PROFILE = _Paths.PROFILE;
   static const SCAN = _Paths.SCAN;
-  static const INVENTORY = _Paths.INVENTORY;
-  static const INVENTORY_DETAIL = _Paths.INVENTORY + _Paths.DETAIL;
-  static const PROFILE = _Paths.PROFILE;
-  static const SCAN = _Paths.SCAN;
   static const LOCATION = _Paths.LOCATION;
 }
 
@@ -25,10 +21,6 @@ abstract class _Paths {
   static const REGISTER = '/register';
   static const AUTH_LOGIN = AUTH + LOGIN;
   static const AUTH_REGISTER = AUTH + REGISTER;
-  static const INVENTORY = '/inventory';
-  static const DETAIL = '/detail';
-  static const PROFILE = '/profile';
-  static const SCAN = '/scan';
   static const INVENTORY = '/inventory';
   static const DETAIL = '/detail';
   static const PROFILE = '/profile';
