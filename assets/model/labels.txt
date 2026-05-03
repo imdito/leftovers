@@ -1206,3 +1206,767 @@ Garang Asem
 Cakalang Fufu
 Sate Kere
 Sop Saudara
+apel
+alpukat
+anggur
+asam jawa
+asam kandis
+asam sunti
+ayam
+ayam goreng
+ayam bakar
+ayam panggang
+ayam rebus
+ayam geprek
+ayam crispy
+ayam katsu
+ayam pop
+ayam rica-rica
+ayam betutu
+ayam opor
+ayam teriyaki
+ayam mentega
+ayam saus tiram
+ayam kari
+ayam gulai
+ayam satay
+sate ayam
+sate taichan
+sate madura
+sate lilit
+sate maranggi
+bebek
+bebek goreng
+bebek bakar
+bebek panggang
+bebek rica-rica
+bebek betutu
+ikan
+ikan goreng
+ikan bakar
+ikan panggang
+ikan asin
+ikan pindang
+ikan bandeng
+bandeng presto
+ikan tongkol
+ikan tuna
+ikan cakalang
+ikan kembung
+ikan nila
+ikan lele
+ikan patin
+ikan gurame
+ikan salmon
+ikan sarden
+ikan teri
+udang
+udang goreng
+udang bakar
+udang saus padang
+udang asam manis
+cumi
+cumi goreng
+cumi bakar
+cumi asin
+kepiting
+kepiting saus padang
+kerang
+kerang hijau
+kerang dara
+tiram
+lobster
+bawal
+kakap
+kakap merah
+dori
+makarel
+sosis
+sosis sapi
+sosis ayam
+sosis bakar
+bakso
+bakso sapi
+bakso ayam
+bakso ikan
+bakso goreng
+bakso bakar
+nugget
+nugget ayam
+nugget ikan
+kornet
+kornet sapi
+daging sapi
+daging kambing
+daging domba
+daging rusa
+daging giling
+steak
+steak sapi
+rendang
+semur daging
+tongseng
+gulai kambing
+sop buntut
+soto
+soto ayam
+soto betawi
+soto madura
+soto lamongan
+soto banjar
+soto padang
+rawon
+sup
+sup ayam
+sup sapi
+sup ikan
+sup jagung
+sup krim
+sayur
+sayur asem
+sayur lodeh
+sayur sop
+capcay
+tumis sayur
+tumis kangkung
+tumis buncis
+tumis sawi
+tumis kol
+lalapan
+pecel
+gado-gado
+karedok
+ketoprak
+rujak
+rujak buah
+rujak cingur
+asinan
+asinan bogor
+salad
+salad buah
+salad sayur
+sambal
+sambal terasi
+sambal matah
+sambal bawang
+sambal ijo
+sambal dabu-dabu
+sambal korek
+nasi
+nasi putih
+nasi merah
+nasi kuning
+nasi uduk
+nasi liwet
+nasi goreng
+nasi goreng ayam
+nasi goreng seafood
+nasi goreng kambing
+nasi goreng kampung
+nasi goreng pete
+nasi goreng teri
+nasi hainan
+nasi kebuli
+nasi briyani
+nasi padang
+nasi rames
+nasi campur
+nasi bakar
+nasi tim
+nasi mentega
+bubur
+bubur ayam
+bubur kacang hijau
+bubur sumsum
+bubur ketan hitam
+bubur manado
+lontong
+lontong sayur
+lontong balap
+ketupat
+ketupat sayur
+mi
+mie
+mie goreng
+mie kuah
+mie ayam
+mie ayam bakso
+mie yamin
+mie tek-tek
+mie aceh
+mie kocok
+mie cakalang
+bakmi
+kwetiau
+kwetiau goreng
+kwetiau kuah
+bihun
+bihun goreng
+bihun kuah
+soun
+spaghetti
+pasta
+macaroni
+lasagna
+ramen
+udon
+soba
+pho
+pad thai
+burger
+roti burger
+hot dog
+pizza
+kebab
+taco
+burrito
+sandwich
+sushi
+sashimi
+onigiri
+tempura
+dimsum
+siomay
+dumpling
+gyoza
+takoyaki
+okonomiyaki
+kimchi
+bibimbap
+tteokbokki
+korean fried chicken
+fried chicken
+kentang
+kentang goreng
+kentang rebus
+kentang panggang
+perkedel
+perkedel kentang
+perkedel jagung
+jagung
+jagung rebus
+jagung bakar
+popcorn
+singkong
+singkong goreng
+singkong rebus
+tape singkong
+ubi
+ubi ungu
+ubi goreng
+ubi rebus
+talas
+talas goreng
+talas rebus
+pisang
+pisang goreng
+pisang rebus
+pisang bakar
+pisang keju
+pisang nugget
+pisang molen
+pisang ambon
+pisang raja
+pisang kepok
+nangka
+nangka muda
+nangka goreng
+durian
+mangga
+mangga harum manis
+mangga gadung
+jeruk
+jeruk nipis
+jeruk lemon
+jeruk sunkist
+jeruk bali
+nanas
+melon
+semangka
+pepaya
+stroberi
+blueberry
+raspberry
+blackberry
+kiwi
+pir
+persik
+plum
+ceri
+delima
+kurma
+kismis
+kelapa
+kelapa muda
+santan
+air kelapa
+sirsak
+jambu
+jambu biji
+jambu air
+salak
+rambutan
+lengkeng
+leci
+buah naga
+markisa
+belimbing
+manggis
+duku
+cempedak
+sawo
+avocado
+tomat
+tomat cherry
+mentimun
+ketimun
+wortel
+kentang manis
+bawang
+bawang putih
+bawang merah
+bawang bombay
+daun bawang
+seledri
+bayam
+kangkung
+kale
+selada
+kol
+kubis
+brokoli
+kembang kol
+buncis
+kacang panjang
+kacang polong
+kacang hijau
+kacang merah
+kacang kedelai
+edamame
+tauge
+jamur
+jamur tiram
+jamur kancing
+jamur kuping
+jamur enoki
+tahu
+tahu goreng
+tahu bacem
+tahu isi
+tahu bulat
+tahu gejrot
+tempe
+tempe goreng
+tempe orek
+oncom
+terong
+terong balado
+labu
+labu siam
+labu kuning
+pare
+petai
+jengkol
+cabai
+cabai rawit
+cabai merah
+paprika
+jahe
+kunyit
+kencur
+lengkuas
+serai
+daun salam
+daun jeruk
+kemangi
+ketumbar
+merica
+lada
+pala
+kayu manis
+cengkeh
+kapulaga
+jinten
+vanila
+garam
+gula
+gula merah
+madu
+sirup
+cokelat
+cokelat bubuk
+cokelat batang
+keju
+keju cheddar
+keju mozzarella
+keju parmesan
+susu
+susu sapi
+susu kedelai
+susu almond
+yoghurt
+yogurt
+mentega
+butter
+margarin
+krim
+whipping cream
+es krim
+ice cream
+gelah
+puding
+pudding
+agar-agar
+jeli
+jelly
+kue
+kue ulang tahun
+kue tart
+brownies
+bolu
+bolu gulung
+cupcake
+donat
+roti
+roti tawar
+roti gandum
+roti bakar
+croissant
+bagel
+brioche
+kue lapis
+lapis legit
+kue cubit
+kue pukis
+kue pancong
+martabak
+martabak manis
+martabak telur
+terang bulan
+pempek
+pempek kapal selam
+tekwan
+model
+kerupuk
+kerupuk udang
+kerupuk ikan
+keripik
+keripik singkong
+keripik kentang
+keripik pisang
+keripik tempe
+rempeyek
+kacang goreng
+kacang tanah
+selai
+selai kacang
+selai stroberi
+selai cokelat
+mayones
+saus
+saus tomat
+saus sambal
+saus tiram
+saus barbeque
+saus mayo
+kecap
+kecap manis
+kecap asin
+saus ikan
+saus teriyaki
+saus mentai
+cuka
+minyak
+minyak goreng
+minyak zaitun
+minyak kelapa
+teh
+teh manis
+teh tawar
+teh hijau
+matcha
+kopi
+kopi hitam
+latte
+cappuccino
+espresso
+americano
+milkshake
+smoothie
+jus
+jus apel
+jus jeruk
+jus mangga
+jus alpukat
+jus jambu
+jus wortel
+soda
+air mineral
+air putih
+es teh
+es kopi
+es jeruk
+es kelapa
+susu cokelat
+susu strawberry
+biskuit
+cookies
+cracker
+wafer
+sereal
+oatmeal
+oats
+granola
+muesli
+cereal bar
+chicken
+beef
+mutton
+lamb
+fish
+shrimp
+squid
+crab
+egg
+telur
+telur ayam
+telur bebek
+telur puyuh
+telur rebus
+telur goreng
+telur dadar
+telur ceplok
+omelet
+scrambled egg
+telur balado
+mayonnaise
+yogurt drink
+cheese cake
+cheesecake
+tiramisu
+pancake
+waffle
+crepe
+syrup maple
+honey
+jam
+peanut butter
+chili sauce
+tomato ketchup
+soy sauce
+oyster sauce
+barbecue sauce
+keep frozen
+frozen food
+makanan beku
+makanan kaleng
+sarden kaleng
+tuna kaleng
+kacang kaleng
+susu kental manis
+skm
+bumbu instan
+mie instan
+indomie
+supermi
+sarimi
+sauce sachet
+bawang goreng
+abon
+abon sapi
+abon ayam
+serundeng
+dendeng
+dendeng balado
+ikan asap
+sate padang
+sate kambing
+sate sapi
+bakmi jawa
+soto mie
+sop konro
+coto makassar
+pallubasa
+gulai ikan
+ikan kuah kuning
+pep es ikan
+pepes ikan
+pepes ayam
+pepes tahu
+pepes jamur
+pepes tongkol
+perkedel tahu
+perkedel tempe
+ayam penyet
+ikan penyet
+bebek penyet
+ayam kungpao
+ayam lada hitam
+ayam sambal ijo
+ayam woku
+ayam taliwang
+ayam betutu bali
+ayam sasando
+sate bumbu kacang
+sate kecap
+sate padang kuah
+soto ceker
+sop iga
+iga bakar
+iga penyet
+gulai sapi
+kari ayam
+kari sapi
+kari ikan
+kari udang
+kari sayur
+opor ayam
+opor telur
+ketupat opor
+lodeh terong
+tumis toge
+tumis jamur
+tumis tempe
+tumis tahu
+tumis udang
+tumis cumi
+ikan balado
+tongkol balado
+teri balado
+kentang balado
+telur balado
+sambal goreng kentang
+sambal goreng ati
+ati ampela
+jantung ayam
+usus ayam
+bakso urat
+bakso mercon
+seblak
+cilok
+cireng
+cimol
+batagor
+siomay bandung
+bakwan
+bakwan jagung
+bakwan sayur
+mendoan
+tempe mendoan
+tahu sumedang
+gehu
+risoles
+pastel
+lumpia
+lumpia semarang
+lemper
+arem-arem
+nasi kucing
+nasi pecel
+nasi gudeg
+gudeg
+nasi megono
+nasi tumpeng
+ayam goreng lengkuas
+ayam goreng kremes
+ayam goreng kalasan
+ayam goreng suwir
+ayam suwir
+ayam gohyong
+spicy chicken
+fried rice
+chicken noodle
+beef noodle
+vegetable soup
+fruit salad
+vegetable salad
+banana
+apple
+grape
+orange
+lemon
+lime
+mango
+pineapple
+watermelon
+melon
+papaya
+strawberry
+blueberry
+kiwifruit
+pear
+peach
+plum
+cherry
+pomegranate
+date fruit
+raisin
+coconut
+tomato
+cucumber
+carrot
+potato
+onion
+garlic
+ginger
+turmeric
+galangal
+lemongrass
+celery
+scallion
+spinach
+kangkong
+lettuce
+cabbage
+broccoli
+cauliflower
+green beans
+peas
+soybean
+tofu
+tempeh
+mushroom
+eggplant
+pumpkin
+chili pepper
+paprika pepper
+black pepper
+salt
+sugar
+brown sugar
+milk
+cheddar cheese
+mozzarella cheese
+butter
+margarine
+cream
+yogurt
+ice cream
+bread
+toast
+croissant
+baguette
+noodles
+rice
+porridge
+soup
+salad
+snack
+cookie
+biscuit
+wafer
+chocolate
+candy
+honey tea
+coffee
+tea
+juice
+smoothie
+milkshake
+soda
+water
+mineral water
+instant noodles
+canned food
+frozen food
+meal
