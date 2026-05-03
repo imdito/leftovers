@@ -50,6 +50,7 @@ dependencies:
   image: ^4.8.0
   flutter_local_notifications: ^21.0.0
   timezone: ^0.11.0
+  shake: ^3.0.0
 
 
 dev_dependencies:

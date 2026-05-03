@@ -1,9 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:leftovers/app/data/models/inventory_model.dart';
+import 'package:shake/shake.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../data/services/notification_service.dart';
@@ -15,12 +17,15 @@ class HomeController extends GetxController {
   var criticalItems = <InventoryItem>[].obs;
   final notificationService = Get.put(NotificationService());
   var totalSavedMoney = 0.obs;
+  ShakeDetector? shakeDetector;
   @override
   void onInit() {
     super.onInit();
     // 1. Muat data saat halaman Home pertama kali dibuka
     loadHomeData();
     notificationService.init();
+
+    _initEasterEgg();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
 
@@ -47,6 +52,7 @@ class HomeController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+    shakeDetector?.stopListening();
   }
 
   void checkSecurity() {
@@ -76,6 +82,55 @@ class HomeController extends GetxController {
 
     // Ambil maksimal 3 item saja agar tampilan Home tidak kepanjangan
     criticalItems.assignAll(almostExpired.take(3).toList());
+  }
+  void _initEasterEgg() {
+    
+    print("🚀 Memulai inisialisasi Easter Egg goyangan...");
+    // Memulai pendeteksi goyangan secara otomatis
+    shakeDetector = ShakeDetector.autoStart(
+      shakeThresholdGravity: 0.5, // Sensitivitas goyangan (makin kecil makin sensitif)
+      onPhoneShake: (ShakeEvent event) {
+        print("Hp Bergoyang");
+        // Cegah dialog muncul berkali-kali kalau HP digoyang terus-terusan
+        if (!Get.isDialogOpen!) {
+          _begoyangDiaa();
+        }
+      },
+    );
+  }
+
+  void _begoyangDiaa() {
+    // Memunculkan popup GetX di tengah layar
+    Get.dialog(
+      Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                '😵‍💫',
+                style: TextStyle(fontSize: 100),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  'Aduh... pusing jangan digoyang-goyang!',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      // Dialog akan hilang otomatis jika user menyentuh area luar
+      barrierDismissible: true,
+    );
   }
 
 }
