@@ -29,6 +29,64 @@ async function initDb() {
 }
 initDb();
 
+// GET /places/nearby?lat=-7.77&lng=110.38&category=supermarket&radius=3000
+app.get('/places/nearby', async (req, res) => {
+  const { lat, lng, category, radius = 3000 } = req.query;
+
+  // Validasi parameter wajib
+  if (!lat || !lng || !category) {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Parameter lat, lng, dan category wajib diisi' 
+    });
+  }
+
+  try {
+    const query = `
+      SELECT *, 
+        (6371000 * acos(
+          cos(radians(?)) * cos(radians(latitude)) *
+          cos(radians(longitude) - radians(?)) +
+          sin(radians(?)) * sin(radians(latitude))
+        )) AS distance_meters
+      FROM places
+      WHERE is_active = TRUE
+        AND category = ?
+      HAVING distance_meters <= ?
+      ORDER BY distance_meters ASC
+      LIMIT 20
+    `;
+
+    const [rows] = await pool.execute(query, [lat, lng, lat, category, radius]); // ✅ pool
+    res.json({ success: true, data: rows });
+
+  } catch (error) {
+    console.error('Nearby Places Error:', error);
+    res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server' });
+  }
+});
+
+// ==========================================
+// MIDDLEWARE: VERIFIKASI JWT TOKEN
+// ==========================================
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    // Format header: "Bearer <token>"
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'Akses ditolak. Token tidak ditemukan.' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({ message: 'Token tidak valid atau sudah kedaluwarsa.' });
+        }
+        req.user = user; // Menyimpan payload JWT (seperti id dan email) ke dalam req
+        next(); // Lanjut ke route berikutnya
+    });
+};
+
 // ==========================================
 // MIDDLEWARE: VERIFIKASI JWT TOKEN
 // ==========================================

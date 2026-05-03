@@ -60,7 +60,6 @@ class HomeView extends GetView<HomeController> {
             const SizedBox(height: 12),
             _buildMiniGameSection(),
             const SizedBox(height: 70),
-
           ],
         ),
       ),
@@ -68,7 +67,10 @@ class HomeView extends GetView<HomeController> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFF2E7D32),
         icon: const Icon(Icons.document_scanner_outlined, color: Colors.white),
-        label: const Text("Scan Makanan", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        label: const Text(
+          "Scan Makanan",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         onPressed: () {
           Get.toNamed("/scan");
         },
@@ -127,15 +129,23 @@ class HomeView extends GetView<HomeController> {
             child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.local_fire_department, color: Colors.orangeAccent, size: 18),
+                Icon(
+                  Icons.local_fire_department,
+                  color: Colors.orangeAccent,
+                  size: 18,
+                ),
                 SizedBox(width: 4),
                 Text(
                   "5 Hari tanpa Food Waste!",
-                  style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -148,7 +158,7 @@ class HomeView extends GetView<HomeController> {
       children: [
         _actionButton(Icons.kitchen, "Kulkas", Colors.blue, "/inventory"),
         _actionButton(Icons.menu_book, "Resep", Colors.orange, "/recipes"),
-        _actionButton(Icons.map_outlined, "Donasi", Colors.purple, "/donation"),
+        _actionButton(Icons.map_outlined, "Donasi", Colors.purple, "/location"),
         _actionButton(Icons.person_outline, "Profil", Colors.teal, "/profile"),
       ],
     );
@@ -258,13 +268,16 @@ class HomeView extends GetView<HomeController> {
       ),
       // Menggunakan Clip.hardEdge agar webview tidak keluar dari border radius lengkung
       clipBehavior: Clip.hardEdge,
-      child: WebViewWidget(
-        controller: controller.webViewController,
-      ),
+      child: WebViewWidget(controller: controller.webViewController),
     );
   }
 
-  Widget _foodItemCard(String name, String status, String category, Color statusColor) {
+  Widget _foodItemCard(
+    String name,
+    String status,
+    String category,
+    Color statusColor,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -318,7 +331,11 @@ class HomeView extends GetView<HomeController> {
             ),
             child: Text(
               status,
-              style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: statusColor,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],

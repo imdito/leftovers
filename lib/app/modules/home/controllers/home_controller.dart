@@ -40,7 +40,7 @@ class HomeController extends GetxController {
     webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
-
+    // Langsung muat URL sumber dari iframe kamu
       ..loadRequest(Uri.parse('https://zv1y2i8p.play.gamezop.com/g/H1be5Ef0Qp'));
   }
 
@@ -84,7 +84,7 @@ class HomeController extends GetxController {
     criticalItems.assignAll(almostExpired.take(3).toList());
   }
   void _initEasterEgg() {
-    
+
     print("🚀 Memulai inisialisasi Easter Egg goyangan...");
     // Memulai pendeteksi goyangan secara otomatis
     shakeDetector = ShakeDetector.autoStart(
