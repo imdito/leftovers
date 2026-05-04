@@ -132,6 +132,7 @@ class InventoryController extends GetxController {
   }
 
   Future<void> addItem() async {
+    final currency = CurrencyService(box: gamificationBox);
     if (nameController.text.isEmpty || selectedDate.value == null) {
       Get.snackbar(
         'Gagal',
@@ -144,8 +145,14 @@ class InventoryController extends GetxController {
     }
 
     final rawPrice = priceController.text.trim();
-    final parsedPrice = int.tryParse(rawPrice.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-    if (parsedPrice <= 0) {
+    final parsedPrice = double.tryParse(rawPrice.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+    int convertedPrice = parsedPrice.toInt();
+    if(currency.symbol != 'Rp ') {
+      // Jika simbol bukan Rp, asumsikan input sudah dalam mata uang yang benar dan konversi ke IDR
+      convertedPrice = currency.convertSelectedToIdr(parsedPrice);
+    }
+
+    if (convertedPrice <= 0) {
       Get.snackbar(
         'Gagal',
         'Harga harus diisi dan lebih dari 0!',
@@ -184,7 +191,7 @@ class InventoryController extends GetxController {
       quantity: quantity.value,
       expirationDate: selectedDate.value!,
       category: selectedCategory.value,
-      price: parsedPrice,
+      price: convertedPrice,
     );
 
     await inventoryBox.add(newItem);

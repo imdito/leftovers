@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
@@ -35,8 +37,7 @@ class CurrencyService {
   }
 
   Map<String, double> _defaultRatesAgainstIdr() {
-    // Rate sederhana (manual). Angka ini bisa kamu update kapan saja.
-    // Nilai = 1 IDR sama dengan berapa unit currency tsb.
+    // Rate cadangan jika aplikasi pertama kali dibuka dan tidak ada internet
     return {
       'IDR': 1.0,
       'USD': 1.0 / 16000.0,
@@ -66,6 +67,45 @@ class CurrencyService {
     await _box.put(kCurrencyRates, rates);
   }
 
+
+  Future<void> fetchAndSaveLatestRates() async {
+    try {
+      // Karena storage kita base-nya IDR, kita tembak endpoint idr.json
+      // API ini akan mereturn nilai "1 IDR = berapa USD/EUR/dll"
+      final url = Uri.parse('https://latest.currency-api.pages.dev/v1/currencies/idr.json');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final Map<String, dynamic> idrRates = data['idr'];
+
+        // Daftar mata uang yang kita dukung di aplikasi
+        final targetCurrencies = ['idr', 'usd', 'eur', 'jpy', 'gbp', 'sgd'];
+        final updatedRates = <String, double>{};
+
+        for (String curr in targetCurrencies) {
+          if (idrRates.containsKey(curr)) {
+            // Ubah key jadi UPPERCASE agar cocok dengan standar aplikasi
+            updatedRates[curr.toUpperCase()] = (idrRates[curr] as num).toDouble();
+          }
+        }
+
+        if (updatedRates.isNotEmpty) {
+          // Timpa data lama di Hive dengan data API terbaru
+          await setRatesAgainstIdr(updatedRates);
+          print("✅ Berhasil update API kurs mata uang ke Hive!");
+        }
+      } else {
+        print("⚠️ Gagal tarik API kurs. HTTP Status: ${response.statusCode}");
+      }
+    } catch (e) {
+      // Jika HP tidak ada koneksi internet, biarkan gagal diam-diam.
+      // Aplikasi akan otomatis fallback memakai rates yang sudah tersimpan di Hive.
+      print("❌ Error API Kurs: $e. Menggunakan cache Hive/Default.");
+    }
+  }
+  // ====================================================================
+
   /// Konversi IDR (storage) menjadi nominal sesuai currency user (display).
   double convertFromIdr(int idrAmount) {
     final rates = ratesAgainstIdr;
@@ -77,5 +117,14 @@ class CurrencyService {
   String formatFromIdr(int idrAmount, {int decimalDigits = 0}) {
     final converted = convertFromIdr(idrAmount);
     return formatter(decimalDigits: decimalDigits).format(converted);
+  }
+
+  /// Konversi dari nominal user (dalam mata uang terpilih) ke IDR untuk disimpan.
+  int convertSelectedToIdr(double amountInSelected) {
+    final rates = ratesAgainstIdr;
+    final rate = rates[code] ?? 1.0;
+    if (rate == 0) return amountInSelected.round();
+    final idr = amountInSelected / rate;
+    return idr.round();
   }
 }

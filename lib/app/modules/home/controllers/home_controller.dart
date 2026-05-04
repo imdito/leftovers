@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:leftovers/app/data/models/inventory_model.dart';
+import 'package:leftovers/app/data/services/currency_service.dart';
 import 'package:shake/shake.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -45,6 +46,9 @@ class HomeController extends GetxController {
         loadHomeData();
       }
     });
+
+    final currencyService = CurrencyService();
+    currencyService.fetchAndSaveLatestRates(); // Biarkan berjalan di background tanpa await
 
     webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
