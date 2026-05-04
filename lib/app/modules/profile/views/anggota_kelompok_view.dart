@@ -37,7 +37,7 @@ class AnggotaKelompokView extends StatelessWidget {
             const SizedBox(height: 12),
             _memberCard(
               name: 'Taufiq Candra Kurniawan',
-              nim: '123230071',
+              nim: '123230074',
               kelas: 'IF-H',
               initials: 'TC',
               color: const Color(0xFFAB47BC),
