@@ -409,27 +409,30 @@ class LocationView extends GetView<LocationController> {
         return Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.location_off, size: 50, color: Colors.grey),
-                const SizedBox(height: 10),
-                Text(
-                  controller.errorMessage.value,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 14),
-                ElevatedButton.icon(
-                  onPressed: controller.fetchNearbyPlaces,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Coba Lagi'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green[700],
-                    foregroundColor: Colors.white,
+            child: SingleChildScrollView(
+              // ← Column diganti jadi ini
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.location_off, size: 50, color: Colors.grey),
+                  const SizedBox(height: 10),
+                  Text(
+                    controller.errorMessage.value,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.grey),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 14),
+                  ElevatedButton.icon(
+                    onPressed: controller.fetchNearbyPlaces,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Coba Lagi'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[700],
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );

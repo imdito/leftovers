@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Konfigurasi Database (Nilainya diambil dari docker-compose.yml)
+// Konfigurasi Database
 const dbConfig = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -18,7 +18,6 @@ const dbConfig = {
 
 let pool;
 
-// Inisiasi Koneksi Database
 async function initDb() {
     try {
         pool = mysql.createPool(dbConfig);
@@ -29,49 +28,49 @@ async function initDb() {
 }
 initDb();
 
-// GET /places/nearby?lat=-7.77&lng=110.38&category=supermarket&radius=3000
-app.get('/places/nearby', async (req, res) => {
-  const { lat, lng, category, radius = 3000 } = req.query;
+// ==========================================
+// ROUTE: PLACES NEARBY
+// ==========================================
+app.get('/api/places/nearby', async (req, res) => {
+    const { lat, lng, category, radius = 3000 } = req.query;
 
-  // Validasi parameter wajib
-  if (!lat || !lng || !category) {
-    return res.status(400).json({ 
-      success: false, 
-      message: 'Parameter lat, lng, dan category wajib diisi' 
-    });
-  }
+    if (!lat || !lng || !category) {
+        return res.status(400).json({
+            success: false,
+            message: 'Parameter lat, lng, dan category wajib diisi'
+        });
+    }
 
-  try {
-    const query = `
-      SELECT *, 
-        (6371000 * acos(
-          cos(radians(?)) * cos(radians(latitude)) *
-          cos(radians(longitude) - radians(?)) +
-          sin(radians(?)) * sin(radians(latitude))
-        )) AS distance_meters
-      FROM places
-      WHERE is_active = TRUE
-        AND category = ?
-      HAVING distance_meters <= ?
-      ORDER BY distance_meters ASC
-      LIMIT 20
-    `;
+    try {
+        const query = `
+            SELECT *, 
+                (6371000 * acos(
+                    cos(radians(?)) * cos(radians(latitude)) *
+                    cos(radians(longitude) - radians(?)) +
+                    sin(radians(?)) * sin(radians(latitude))
+                )) AS distance_meters
+            FROM places
+            WHERE is_active = TRUE
+                AND category = ?
+            HAVING distance_meters <= ?
+            ORDER BY distance_meters ASC
+            LIMIT 20
+        `;
 
-    const [rows] = await pool.execute(query, [lat, lng, lat, category, radius]); // ✅ pool
-    res.json({ success: true, data: rows });
+        const [rows] = await pool.execute(query, [lat, lng, lat, category, radius]);
+        res.json({ success: true, data: rows });
 
-  } catch (error) {
-    console.error('Nearby Places Error:', error);
-    res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server' });
-  }
+    } catch (error) {
+        console.error('Nearby Places Error:', error);
+        res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server' });
+    }
 });
 
 // ==========================================
-// MIDDLEWARE: VERIFIKASI JWT TOKEN
+// MIDDLEWARE: VERIFIKASI JWT TOKEN (hanya satu!)
 // ==========================================
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
-    // Format header: "Bearer <token>"
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
@@ -82,29 +81,8 @@ const authenticateToken = (req, res, next) => {
         if (err) {
             return res.status(403).json({ message: 'Token tidak valid atau sudah kedaluwarsa.' });
         }
-        req.user = user; // Menyimpan payload JWT (seperti id dan email) ke dalam req
-        next(); // Lanjut ke route berikutnya
-    });
-};
-
-// ==========================================
-// MIDDLEWARE: VERIFIKASI JWT TOKEN
-// ==========================================
-const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    // Format header: "Bearer <token>"
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({ message: 'Akses ditolak. Token tidak ditemukan.' });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.status(403).json({ message: 'Token tidak valid atau sudah kedaluwarsa.' });
-        }
-        req.user = user; // Menyimpan payload JWT (seperti id dan email) ke dalam req
-        next(); // Lanjut ke route berikutnya
+        req.user = user;
+        next();
     });
 };
 
@@ -178,7 +156,7 @@ app.post('/api/login', async (req, res) => {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                profile_photo: user.profile_photo // <-- TAMBAHAN: Kembalikan ID foto dari DB
+                profile_photo: user.profile_photo
             }
         });
     } catch (error) {
@@ -188,7 +166,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 // ==========================================
-// ROUTE: UPDATE PROFILE PHOTO (DARI APPWRITE)
+// ROUTE: UPDATE PROFILE PHOTO
 // ==========================================
 app.put('/api/profile/update-photo', authenticateToken, async (req, res) => {
     const { profile_photo } = req.body;
@@ -198,7 +176,6 @@ app.put('/api/profile/update-photo', authenticateToken, async (req, res) => {
     }
 
     try {
-        // req.user.id didapatkan dari middleware authenticateToken
         await pool.query(
             'UPDATE users SET profile_photo = ? WHERE id = ?',
             [profile_photo, req.user.id]
@@ -214,8 +191,11 @@ app.put('/api/profile/update-photo', authenticateToken, async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE: PING TEST
+// ==========================================
 app.get('/api/ping', (req, res) => {
-    res.json({ message: "Halo Dito! HP dan Server sudah terhubung dengan aman 🚀" });
+    res.json({ message: "Halo! HP dan Server sudah terhubung 🚀" });
 });
 
 // Jalankan Server
