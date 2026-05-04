@@ -5,6 +5,7 @@ import 'package:leftovers/app/data/services/time_service.dart';
 import '../../../services/appwrite_service.dart';
 import '../../../data/services/currency_service.dart';
 import '../controllers/profile_controller.dart';
+import 'package:leftovers/app/routes/app_pages.dart';
 import 'package:leftovers/app/widgets/app_bottom_navbar.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -120,13 +121,13 @@ class ProfileView extends GetView<ProfileController> {
             icon: Icons.attach_email_outlined,
             title: "Kesan dan Pesan",
             subtitle: "Kesan dan pesan untuk matakuliah TPM",
-            onTap: () {},
+            onTap: () => Get.toNamed(Routes.KESAN_PESAN),
           ),
           _menuTile(
             icon: Icons.help_outline,
             title: "Anggota Kelompok",
             subtitle: "Daftar anggota kelompok matakuliah TPM",
-            onTap: () {},
+            onTap: () => Get.toNamed(Routes.ANGGOTA_KELOMPOK),
           ),
           const SizedBox(height: 20),
           // Tombol Logout

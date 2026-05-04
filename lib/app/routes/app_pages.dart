@@ -22,6 +22,8 @@ import '../modules/location/bindings/location_binding.dart';
 import '../modules/location/views/location_view.dart';
 import '../modules/recipe/bindings/recipe_binding.dart';
 import '../modules/recipe/views/recipe_view.dart';
+import '../modules/profile/views/kesan_pesan_view.dart';
+import '../modules/profile/views/anggota_kelompok_view.dart';
 
 part 'app_routes.dart';
 
@@ -99,6 +101,11 @@ class AppPages {
     GetPage(
       name: _Paths.RECIPE + _Paths.DETAIL,
       page: () => const RecipeDetailView(),
+    ),
+    GetPage(name: _Paths.KESAN_PESAN, page: () => const KesanPesanView()),
+    GetPage(
+      name: _Paths.ANGGOTA_KELOMPOK,
+      page: () => const AnggotaKelompokView(),
     ),
   ];
 }

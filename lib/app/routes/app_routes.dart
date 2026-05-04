@@ -12,6 +12,8 @@ abstract class Routes {
   static const LOCATION = _Paths.LOCATION;
   static const RECIPE = _Paths.RECIPE;
   static const RECIPE_DETAIL = _Paths.RECIPE + _Paths.DETAIL;
+  static const KESAN_PESAN = _Paths.KESAN_PESAN;
+  static const ANGGOTA_KELOMPOK = _Paths.ANGGOTA_KELOMPOK;
 }
 
 abstract class _Paths {
@@ -28,4 +30,6 @@ abstract class _Paths {
   static const SCAN = '/scan';
   static const LOCATION = '/location';
   static const RECIPE = '/recipe';
+  static const KESAN_PESAN = '/kesan-pesan';
+  static const ANGGOTA_KELOMPOK = '/anggota';
 }
