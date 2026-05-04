@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:leftovers/app/routes/app_pages.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 
@@ -207,22 +208,13 @@ class ScanController extends GetxController {
     if (detectedItems.isEmpty) return;
 
     // Ekstrak nama bahan tanpa persentase (misal: "Ayam (95.0%)" -> "Ayam")
-    List<String> ingredients = detectedItems.map((item) {
-      return item.split(' (')[0];
+    final ingredients = detectedItems.map((item) {
+      return item.split(' (')[0].trim();
     }).toList();
 
-    print("🍳 Memulai generate resep ke LLM Lokal...");
+    print("🍳 Memulai generate resep ke halaman Recipe...");
     print("📋 Bahan yang dikirim: ${ingredients.join(', ')}");
 
-    // TODO: Masukkan logika pemanggilan LLM Lokal Anda di sini.
-    // Sementara kita gunakan Snackbar sebagai indikator bahwa fungsi ini berjalan.
-    Get.snackbar(
-      "Mencari Resep 🤖",
-      "Sedang meracik resep dari bahan: ${ingredients.join(', ')}...",
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Get.theme.primaryColor,
-      colorText: Get.theme.colorScheme.onPrimary,
-      margin: const EdgeInsets.all(16),
-    );
+    Get.toNamed(Routes.RECIPE, arguments: {'ingredients': ingredients});
   }
 }

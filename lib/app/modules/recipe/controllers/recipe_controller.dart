@@ -58,6 +58,26 @@ class Recipe {
 }
 
 class RecipeController extends GetxController {
+  @override
+  void onInit() {
+    super.onInit();
+
+    final args = Get.arguments;
+    List<String>? initialIngredients;
+
+    if (args is List<String>) {
+      initialIngredients = args.cast<String>();
+    } else if (args is Map<String, dynamic> && args['ingredients'] is List) {
+      initialIngredients = (args['ingredients'] as List).cast<String>();
+    }
+
+    if (initialIngredients != null && initialIngredients.isNotEmpty) {
+      activeTab.value = 0;
+      ingredients.assignAll(initialIngredients);
+      generateRecipesFromIngredients();
+    }
+  }
+
   // ─── State ────────────────────────────────────────────
   final isLoading = false.obs;
   final isLoadingDetail = false.obs;
