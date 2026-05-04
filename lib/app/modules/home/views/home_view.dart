@@ -11,7 +11,9 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA), // Latar belakang abu-abu sangat terang
+      backgroundColor: const Color(
+        0xFFF8F9FA,
+      ), // Latar belakang abu-abu sangat terang
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -28,16 +30,16 @@ class HomeView extends GetView<HomeController> {
             ),
             Text(
               "Siap menyelamatkan makanan hari ini?",
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.black87),
+            icon: const Icon(
+              Icons.notifications_outlined,
+              color: Colors.black87,
+            ),
             onPressed: () {},
           ),
           const SizedBox(width: 8),
@@ -124,7 +126,7 @@ class HomeView extends GetView<HomeController> {
           ),
           const SizedBox(height: 16),
 
-          // --- CHIP JAM DIGITAL REAL-TIME ---
+          // --- JAM DIGITAL REAL-TIME ---
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
@@ -160,7 +162,7 @@ class HomeView extends GetView<HomeController> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _actionButton(Icons.kitchen, "Kulkas", Colors.blue, "/inventory"),
-        _actionButton(Icons.menu_book, "Resep", Colors.orange, "/recipes"),
+        _actionButton(Icons.menu_book, "Resep", Colors.orange, "/recipe"),
         _actionButton(Icons.map_outlined, "Donasi", Colors.purple, "/location"),
         _actionButton(Icons.person_outline, "Profil", Colors.teal, "/profile"),
       ],
@@ -199,11 +201,18 @@ class HomeView extends GetView<HomeController> {
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
         ),
         TextButton(
           onPressed: () {},
-          child: Text(actionText, style: const TextStyle(color: Color(0xFF2E7D32))),
+          child: Text(
+            actionText,
+            style: const TextStyle(color: Color(0xFF2E7D32)),
+          ),
         ),
       ],
     );
@@ -228,7 +237,10 @@ class HomeView extends GetView<HomeController> {
               SizedBox(height: 8),
               Text(
                 "Aman! Tidak ada makanan yang mau basi.",
-                style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -241,7 +253,9 @@ class HomeView extends GetView<HomeController> {
           final diff = item.expirationDate.difference(DateTime.now()).inDays;
 
           // Penentuan teks dan warna secara dinamis
-          String status = diff == 0 ? "Kedaluwarsa Hari Ini!" : "Tersisa $diff Hari";
+          String status = diff == 0
+              ? "Kedaluwarsa Hari Ini!"
+              : "Tersisa $diff Hari";
           Color statusColor = diff == 0 ? Colors.redAccent : Colors.orange;
 
           return Padding(
@@ -305,7 +319,11 @@ class HomeView extends GetView<HomeController> {
             ),
             // Ikon dinamis berdasarkan kategori
             child: Icon(
-              category == "Daging" ? Icons.set_meal : category == "Dairy" ? Icons.local_drink : Icons.eco,
+              category == "Daging"
+                  ? Icons.set_meal
+                  : category == "Dairy"
+                  ? Icons.local_drink
+                  : Icons.eco,
               color: Colors.grey.shade600,
             ),
           ),
@@ -316,7 +334,10 @@ class HomeView extends GetView<HomeController> {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -346,4 +367,3 @@ class HomeView extends GetView<HomeController> {
     );
   }
 }
-
