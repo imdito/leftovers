@@ -505,26 +505,48 @@ class RecipeView extends GetView<RecipeController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image header
-            Container(
-              height: 100,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.green[50],
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
               ),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
-                child: Image.network(
-                  recipe.imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Center(
-                    child: Icon(Icons.image, size: 52, color: Colors.grey),
-                  ),
-                ),
+              child: SizedBox(
+                height: 100,
+                width: double.infinity,
+                child: recipe.imageUrl.isNotEmpty
+                    ? Image.network(
+                        recipe.imageUrl,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, progress) {
+                          if (progress == null) return child;
+                          return Container(
+                            color: Colors.green[50],
+                            child: Center(
+                              child: Text(
+                                recipe.emoji,
+                                style: const TextStyle(fontSize: 40),
+                              ),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Colors.green[50],
+                          child: Center(
+                            child: Text(
+                              recipe.emoji,
+                              style: const TextStyle(fontSize: 40),
+                            ),
+                          ),
+                        ),
+                      )
+                    : Container(
+                        color: Colors.green[50],
+                        child: Center(
+                          child: Text(
+                            recipe.emoji,
+                            style: const TextStyle(fontSize: 40),
+                          ),
+                        ),
+                      ),
               ),
             ),
 
@@ -624,18 +646,41 @@ class RecipeDetailView extends GetView<RecipeController> {
               backgroundColor: Colors.green[700],
               foregroundColor: Colors.white,
               flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  color: Colors.green[50],
-                  child: Center(
-                    child: Image.network(
-                      recipe.imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Center(
-                        child: Icon(Icons.image, size: 80, color: Colors.grey),
+                background: recipe.imageUrl.isNotEmpty
+                    ? Image.network(
+                        recipe.imageUrl,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, progress) {
+                          if (progress == null) return child;
+                          return Container(
+                            color: Colors.green[50],
+                            child: Center(
+                              child: Text(
+                                recipe.emoji,
+                                style: const TextStyle(fontSize: 80),
+                              ),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Colors.green[50],
+                          child: Center(
+                            child: Text(
+                              recipe.emoji,
+                              style: const TextStyle(fontSize: 80),
+                            ),
+                          ),
+                        ),
+                      )
+                    : Container(
+                        color: Colors.green[50],
+                        child: Center(
+                          child: Text(
+                            recipe.emoji,
+                            style: const TextStyle(fontSize: 80),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
               ),
             ),
 

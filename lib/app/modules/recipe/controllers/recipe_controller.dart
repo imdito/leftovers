@@ -8,6 +8,7 @@ import 'package:leftovers/app/routes/app_pages.dart';
 class Recipe {
   final String name;
   final String imageUrl;
+  final String emoji;
   final String description;
   final List<String> ingredients;
   final List<String> steps;
@@ -18,6 +19,7 @@ class Recipe {
   Recipe({
     required this.name,
     required this.imageUrl,
+    required this.emoji,
     required this.description,
     required this.ingredients,
     required this.steps,
@@ -27,18 +29,30 @@ class Recipe {
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
-    final name = json['name'] ?? '';
-    final imageUrl =
-        'https://source.unsplash.com/featured/?${name.replaceAll(' ', ',')}';
     return Recipe(
-      name: name,
-      imageUrl: imageUrl,
+      name: json['name'] ?? '',
+      imageUrl: '', // diisi setelah fetch Pixabay
+      emoji: json['emoji'] ?? '🍽️',
       description: json['description'] ?? '',
       ingredients: List<String>.from(json['ingredients'] ?? []),
       steps: List<String>.from(json['steps'] ?? []),
       cookTime: json['cook_time'] ?? '30 menit',
       difficulty: json['difficulty'] ?? 'Mudah',
       category: json['category'] ?? 'Masakan',
+    );
+  }
+
+  Recipe copyWith({String? imageUrl}) {
+    return Recipe(
+      name: name,
+      imageUrl: imageUrl ?? this.imageUrl,
+      emoji: emoji,
+      description: description,
+      ingredients: ingredients,
+      steps: steps,
+      cookTime: cookTime,
+      difficulty: difficulty,
+      category: category,
     );
   }
 }
@@ -62,8 +76,9 @@ class RecipeController extends GetxController {
   // Tab: 0 = dari bahan, 1 = cari resep
   final activeTab = 0.obs;
 
-  // OpenRouter API key
-  static final _apiKey =  dotenv.env['OPENROUTER_API_KEY'];
+  // API keys
+  static final _apiKey = dotenv.env['OPENROUTER_API_KEY'];
+  static final _pixabayKey = dotenv.env['PIXABAY_API_KEY'];
 
   // Urutan fallback: kalau model pertama rate-limited, otomatis coba model berikutnya
   static const _fallbackModels = [
@@ -127,8 +142,8 @@ Format JSON yang harus dikembalikan:
 {"recipes":[{"name":"Nama Masakan","emoji":"🍛","description":"Deskripsi singkat 1 kalimat","ingredients":["bahan 1 secukupnya","bahan 2 100gr"],"steps":["Langkah 1","Langkah 2","Langkah 3"],"cook_time":"20 menit","difficulty":"Mudah","category":"Masakan Indonesia"}]}
 ''';
 
-      final response = await _callAnthropicAPI(prompt);
-      _parseAndSetRecipes(response);
+      final response = await _callOpenRouterAPI(prompt);
+      await _parseAndSetRecipes(response);
     } catch (e) {
       errorMessage.value = 'Gagal generate resep: $e';
     } finally {
@@ -165,8 +180,8 @@ Format JSON yang harus dikembalikan:
 {"recipes":[{"name":"Nama Masakan","emoji":"🍛","description":"Deskripsi singkat 1 kalimat","ingredients":["bahan 1 secukupnya","bahan 2 100gr"],"steps":["Langkah 1","Langkah 2","Langkah 3"],"cook_time":"20 menit","difficulty":"Mudah","category":"Masakan Indonesia"}]}
 ''';
 
-      final response = await _callAnthropicAPI(prompt);
-      _parseAndSetRecipes(response);
+      final response = await _callOpenRouterAPI(prompt);
+      await _parseAndSetRecipes(response);
     } catch (e) {
       errorMessage.value = 'Gagal mencari resep: $e';
     } finally {
@@ -182,8 +197,41 @@ Format JSON yang harus dikembalikan:
     Get.toNamed(Routes.RECIPE_DETAIL);
   }
 
+  // ─── Pixabay image search ─────────────────────────────
+  Future<String> _searchFoodImage(String recipeName) async {
+    if (_pixabayKey == null || _pixabayKey!.isEmpty) return '';
+    try {
+      // Coba query bahasa Indonesia dulu, fallback ke English
+      for (final query in [recipeName, '$recipeName food']) {
+        final url = Uri.parse(
+          'https://pixabay.com/api/'
+          '?key=$_pixabayKey'
+          '&q=${Uri.encodeComponent(query)}'
+          '&image_type=photo'
+          '&category=food'
+          '&min_width=400'
+          '&per_page=3'
+          '&safesearch=true',
+        );
+
+        final response = await http
+            .get(url)
+            .timeout(const Duration(seconds: 10));
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          final hits = data['hits'] as List;
+          if (hits.isNotEmpty) {
+            return hits[0]['webformatURL']?.toString() ?? '';
+          }
+        }
+      }
+    } catch (_) {}
+    return ''; // fallback ke emoji di view
+  }
+
   // ─── OpenRouter API call dengan fallback otomatis ────
-  Future<String> _callAnthropicAPI(String prompt) async {
+  Future<String> _callOpenRouterAPI(String prompt) async {
     final url = Uri.parse('https://openrouter.ai/api/v1/chat/completions');
     Exception? lastError;
 
@@ -210,7 +258,6 @@ Format JSON yang harus dikembalikan:
           final data = json.decode(response.body);
           return data['choices'][0]['message']['content'];
         } else if (response.statusCode == 429) {
-          // Rate limited — coba model berikutnya
           lastError = Exception('Rate limited: $model');
           continue;
         } else {
@@ -231,25 +278,38 @@ Format JSON yang harus dikembalikan:
         Exception('Semua model sedang tidak tersedia, coba lagi nanti.');
   }
 
-  // ─── Parse JSON response dari LLM ─────────────────────
-  void _parseAndSetRecipes(String responseText) {
+  // ─── Parse JSON + fetch gambar paralel ────────────────
+  Future<void> _parseAndSetRecipes(String responseText) async {
     try {
-      // Bersihkan kalau ada backtick atau markdown
       String cleaned = responseText
           .replaceAll('```json', '')
           .replaceAll('```', '')
           .trim();
 
       final data = json.decode(cleaned);
-      final list = (data['recipes'] as List)
+
+      // Tampilkan resep dulu tanpa gambar (cepat)
+      final rawList = (data['recipes'] as List)
           .map((r) => Recipe.fromJson(r))
           .toList();
-
-      recipes.assignAll(list);
+      recipes.assignAll(rawList);
 
       if (recipes.isEmpty) {
         errorMessage.value = 'Tidak ada resep ditemukan.';
+        return;
       }
+
+      // Fetch semua gambar secara paralel di background
+      final imageUrls = await Future.wait(
+        rawList.map((r) => _searchFoodImage(r.name)),
+      );
+
+      // Update list dengan gambar yang sudah dapat
+      final updatedList = rawList.asMap().entries.map((entry) {
+        return entry.value.copyWith(imageUrl: imageUrls[entry.key]);
+      }).toList();
+
+      recipes.assignAll(updatedList);
     } catch (e) {
       errorMessage.value = 'Gagal memproses resep dari AI: $e';
     }
