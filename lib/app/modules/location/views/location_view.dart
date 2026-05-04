@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import '../controllers/location_controller.dart';
+import 'package:leftovers/app/widgets/app_bottom_navbar.dart';
 
 class LocationView extends GetView<LocationController> {
   const LocationView({super.key});
@@ -28,6 +29,7 @@ class LocationView extends GetView<LocationController> {
 
       // ── FAB: Kembali ke lokasi user ───────────────────
       floatingActionButton: _buildMyLocationFab(),
+      bottomNavigationBar: const AppBottomNavbar(currentIndex: 3),
     );
   }
 

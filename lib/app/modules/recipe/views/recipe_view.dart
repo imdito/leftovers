@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/recipe_controller.dart';
+import 'package:leftovers/app/widgets/app_bottom_navbar.dart';
 
 class RecipeView extends GetView<RecipeController> {
   const RecipeView({super.key});
@@ -30,6 +31,7 @@ class RecipeView extends GetView<RecipeController> {
           ),
         ],
       ),
+      bottomNavigationBar: const AppBottomNavbar(currentIndex: 1),
     );
   }
 

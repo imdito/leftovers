@@ -4,6 +4,7 @@ import 'package:intl/intl.dart'; // Buka terminal dan jalankan: flutter pub add 
 import 'package:leftovers/app/modules/inventory/views/add_inventory_bottom_sheet.dart';
 import 'package:leftovers/app/routes/app_pages.dart';
 import '../controllers/inventory_controller.dart';
+import 'package:leftovers/app/widgets/app_bottom_navbar.dart';
 
 class InventoryView extends GetView<InventoryController> {
   const InventoryView({super.key});
@@ -13,7 +14,10 @@ class InventoryView extends GetView<InventoryController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('Isi Kulkasku', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Isi Kulkasku',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 0,
@@ -29,7 +33,11 @@ class InventoryView extends GetView<InventoryController> {
                 const SizedBox(height: 16),
                 const Text(
                   "Kulkasmu masih kosong!",
-                  style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
@@ -71,9 +79,7 @@ class InventoryView extends GetView<InventoryController> {
               child: Obx(() {
                 // Cek jika hasil pencarian kosong
                 if (controller.filteredInventoryItems.isEmpty) {
-                  return const Center(
-                    child: Text('Makanan tidak ditemukan'),
-                  );
+                  return const Center(child: Text('Makanan tidak ditemukan'));
                 }
 
                 return ListView.builder(
@@ -83,7 +89,9 @@ class InventoryView extends GetView<InventoryController> {
                     final item = controller.filteredInventoryItems[index];
 
                     // Hitung sisa hari
-                    final difference = item.expirationDate.difference(DateTime.now()).inDays;
+                    final difference = item.expirationDate
+                        .difference(DateTime.now())
+                        .inDays;
                     Color statusColor = Colors.green;
 
                     if (difference < 0) {
@@ -97,9 +105,14 @@ class InventoryView extends GetView<InventoryController> {
                     return Card(
                       elevation: 0,
                       margin: const EdgeInsets.only(bottom: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         onTap: () {
                           Get.toNamed(Routes.INVENTORY_DETAIL, arguments: item);
                         },
@@ -109,22 +122,37 @@ class InventoryView extends GetView<InventoryController> {
                             color: statusColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(Icons.fastfood, color: statusColor), // Bisa dibuat dinamis sesuai kategori nanti
+                          child: Icon(
+                            Icons.fastfood,
+                            color: statusColor,
+                          ), // Bisa dibuat dinamis sesuai kategori nanti
                         ),
-                        title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        title: Text(
+                          item.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 4),
-                            Text(item.category, style: const TextStyle(fontSize: 12)),
+                            Text(
+                              item.category,
+                              style: const TextStyle(fontSize: 12),
+                            ),
                             Text(
                               'Kedaluwarsa: ${DateFormat('dd MMM yyyy').format(item.expirationDate)}',
-                              style: const TextStyle(fontSize: 12, color: Colors.grey),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
                             ),
                           ],
                         ),
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.redAccent,
+                          ),
                           onPressed: () {
                             // Tampilkan dialog konfirmasi sebelum menghapus
                             Get.defaultDialog(
@@ -150,15 +178,20 @@ class InventoryView extends GetView<InventoryController> {
           ],
         );
       }),
+      bottomNavigationBar: const AppBottomNavbar(currentIndex: 0),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFF2E7D32),
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text("Tambah", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        label: const Text(
+          "Tambah",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         onPressed: () {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true, // Wajib agar form bisa tinggi
-            backgroundColor: Colors.transparent, // Hilangkan background putih bawaan
+            backgroundColor:
+                Colors.transparent, // Hilangkan background putih bawaan
             builder: (context) {
               return const AddInventoryBottomSheet();
             },

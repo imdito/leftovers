@@ -20,7 +20,7 @@ Future<void> main() async {
   await Hive.openBox<InventoryItem>('inventoryBox');
   await Hive.openBox('sessionBox');
   await Hive.openBox('gamificationBox');
-
+  Get.put(NotificationService());
   final authService = Get.put(AuthService());
   Get.put(TimeService());
   runApp(

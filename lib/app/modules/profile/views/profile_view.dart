@@ -5,6 +5,7 @@ import 'package:leftovers/app/data/services/time_service.dart';
 import '../../../services/appwrite_service.dart';
 import '../../../data/services/currency_service.dart';
 import '../controllers/profile_controller.dart';
+import 'package:leftovers/app/widgets/app_bottom_navbar.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -29,6 +30,7 @@ class ProfileView extends GetView<ProfileController> {
           ],
         ),
       ),
+      bottomNavigationBar: const AppBottomNavbar(currentIndex: 4),
     );
   }
 
@@ -45,27 +47,37 @@ class ProfileView extends GetView<ProfileController> {
       ),
       child: Column(
         children: [
-          Obx(() => InkWell(
-            child: CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.white,
-              backgroundImage: controller.isLoading.value ? null
-                  : controller.profilePhotoId.value.isNotEmpty
-                  ? NetworkImage(AppwriteService().getImageUrl(controller.profilePhotoId.value))
-                  : NetworkImage(AppwriteService().getImageUrl(controller.userId)),
-
+          Obx(
+            () => InkWell(
+              child: CircleAvatar(
+                radius: 50,
+                backgroundColor: Colors.white,
+                backgroundImage: controller.isLoading.value
+                    ? null
+                    : controller.profilePhotoId.value.isNotEmpty
+                    ? NetworkImage(
+                        AppwriteService().getImageUrl(
+                          controller.profilePhotoId.value,
+                        ),
+                      )
+                    : NetworkImage(
+                        AppwriteService().getImageUrl(controller.userId),
+                      ),
+              ),
+              onTap: () => controller.pickImage(),
             ),
-            onTap: () => controller.pickImage(),
-          )),
+          ),
           const SizedBox(height: 15),
-          Obx(() => Text(
-            controller.userName.value,
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+          Obx(
+            () => Text(
+              controller.userName.value,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
-          )),
+          ),
           const Text(
             "Food Warrior",
             style: TextStyle(color: Colors.white70, fontSize: 14),
@@ -85,7 +97,10 @@ class ProfileView extends GetView<ProfileController> {
             title: "Pengaturan Biometrik",
             subtitle: "Kelola login sidik jari",
             onTap: () {
-              Get.snackbar("Info", "Fitur ini otomatis aktif jika HP mendukung");
+              Get.snackbar(
+                "Info",
+                "Fitur ini otomatis aktif jika HP mendukung",
+              );
             },
           ),
           _menuTile(
@@ -102,15 +117,15 @@ class ProfileView extends GetView<ProfileController> {
             onTap: () => _showTimeZonePicker(),
           ),
           _menuTile(
-            icon: Icons.history,
-            title: "Riwayat Penyelamatan",
-            subtitle: "Lihat makanan yang berhasil diselamatkan",
+            icon: Icons.attach_email_outlined,
+            title: "Kesan dan Pesan",
+            subtitle: "Kesan dan pesan untuk matakuliah TPM",
             onTap: () {},
           ),
           _menuTile(
             icon: Icons.help_outline,
-            title: "Bantuan",
-            subtitle: "Pusat bantuan & FAQ",
+            title: "Anggota Kelompok",
+            subtitle: "Daftar anggota kelompok matakuliah TPM",
             onTap: () {},
           ),
           const SizedBox(height: 20),
@@ -133,7 +148,7 @@ class ProfileView extends GetView<ProfileController> {
               ),
             ),
           ),
-          SizedBox(height: 20,)
+          SizedBox(height: 20),
         ],
       ),
     );
@@ -197,12 +212,18 @@ class ProfileView extends GetView<ProfileController> {
               return ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(
-                  selected ? Icons.radio_button_checked : Icons.radio_button_off,
+                  selected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
                   color: const Color(0xFF2E7D32),
                 ),
                 title: Text('$code ($symbol)'),
                 onTap: () async {
-                  await currencyService.setCurrency(code: code, symbol: symbol, locale: locale);
+                  await currencyService.setCurrency(
+                    code: code,
+                    symbol: symbol,
+                    locale: locale,
+                  );
                   Get.back();
                   Get.snackbar('Berhasil', 'Mata uang diubah ke $code');
                 },
@@ -245,18 +266,22 @@ class ProfileView extends GetView<ProfileController> {
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: Icon(
-                      isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                      isSelected
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_off,
                       color: const Color(0xFF2E7D32),
                     ),
-                    title: Text(zone == 'Auto' ? 'Otomatis (Sesuai Lokasi)' : zone),
+                    title: Text(
+                      zone == 'Auto' ? 'Otomatis (Sesuai Lokasi)' : zone,
+                    ),
                     onTap: () {
                       // Ubah nilai zona waktu di service
                       timeService.selectedTimeZone.value = zone;
 
                       Get.back();
                       Get.snackbar(
-                          'Berhasil',
-                          'Zona waktu diubah ke ${zone == 'Auto' ? 'Otomatis' : zone}'
+                        'Berhasil',
+                        'Zona waktu diubah ke ${zone == 'Auto' ? 'Otomatis' : zone}',
                       );
                     },
                   );

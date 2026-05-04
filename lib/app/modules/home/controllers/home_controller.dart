@@ -18,7 +18,7 @@ class HomeController extends GetxController {
   final Box<InventoryItem> inventoryBox = Hive.box<InventoryItem>('inventoryBox');
   final Box gamificationBox = Hive.box('gamificationBox');
   var criticalItems = <InventoryItem>[].obs;
-  final notificationService = Get.put(NotificationService());
+  final notificationService = Get.find<NotificationService>();
   var totalSavedMoney = 0.obs;
   ShakeDetector? shakeDetector;
   final timeService = Get.find<TimeService>();

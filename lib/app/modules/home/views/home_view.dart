@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../../../data/services/currency_service.dart';
 import '../controllers/home_controller.dart';
+import 'package:leftovers/app/widgets/app_bottom_navbar.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -51,8 +52,6 @@ class HomeView extends GetView<HomeController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildGamificationCard(),
-            const SizedBox(height: 24),
-            _buildQuickActions(),
             const SizedBox(height: 32),
             _buildSectionHeader("🚨 Hampir Basi!", "Lihat Semua"),
             const SizedBox(height: 12),
@@ -79,6 +78,7 @@ class HomeView extends GetView<HomeController> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      bottomNavigationBar: const AppBottomNavbar(currentIndex: 2),
     );
   }
 
@@ -114,14 +114,16 @@ class HomeView extends GetView<HomeController> {
             stream: Hive.box('gamificationBox').watch(),
             builder: (context, snapshot) {
               final currency = CurrencyService();
-              return Obx(() => Text(
-                currency.formatFromIdr(controller.totalSavedMoney.value),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
+              return Obx(
+                () => Text(
+                  currency.formatFromIdr(controller.totalSavedMoney.value),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ));
+              );
             },
           ),
           const SizedBox(height: 16),
@@ -139,58 +141,25 @@ class HomeView extends GetView<HomeController> {
                 const Icon(Icons.access_time, color: Colors.white, size: 16),
                 const SizedBox(width: 6),
                 // Bungkus dengan Obx agar detiknya berdetak di layar
-                Obx(() => Text(
-                  controller.timeService.formattedTime, // Memanggil fungsi get dari controller
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 1.0, // Memberi jarak agar detik jam terlihat rapi
+                Obx(
+                  () => Text(
+                    controller
+                        .timeService
+                        .formattedTime, // Memanggil fungsi get dari controller
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing:
+                          1.0, // Memberi jarak agar detik jam terlihat rapi
+                    ),
                   ),
-                )),
+                ),
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-
-  // Komponen 2: Menu Cepat
-  Widget _buildQuickActions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _actionButton(Icons.kitchen, "Kulkas", Colors.blue, "/inventory"),
-        _actionButton(Icons.menu_book, "Resep", Colors.orange, "/recipe"),
-        _actionButton(Icons.map_outlined, "Donasi", Colors.purple, "/location"),
-        _actionButton(Icons.person_outline, "Profil", Colors.teal, "/profile"),
-      ],
-    );
-  }
-
-  Widget _actionButton(IconData icon, String label, Color color, String route) {
-    return InkWell(
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 28),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-          ),
-        ],
-      ),
-      onTap: (){
-        Get.toNamed(route);
-      },
     );
   }
 
