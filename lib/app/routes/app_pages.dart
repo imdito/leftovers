@@ -20,6 +20,8 @@ import '../modules/profile/views/profile_view.dart';
 import '../modules/scan/bindings/scan_bindings.dart';
 import '../modules/location/bindings/location_binding.dart';
 import '../modules/location/views/location_view.dart';
+import '../modules/recipe/bindings/recipe_binding.dart';
+import '../modules/recipe/views/recipe_view.dart';
 
 part 'app_routes.dart';
 
@@ -88,6 +90,15 @@ class AppPages {
       name: _Paths.LOCATION,
       page: () => const LocationView(),
       binding: LocationBinding(),
+    ),
+    GetPage(
+      name: _Paths.RECIPE,
+      page: () => const RecipeView(),
+      binding: RecipeBinding(),
+    ),
+    GetPage(
+      name: _Paths.RECIPE + _Paths.DETAIL,
+      page: () => const RecipeDetailView(),
     ),
   ];
 }
