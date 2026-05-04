@@ -10,6 +10,7 @@ import 'package:shake/shake.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../data/services/notification_service.dart';
+import '../../../data/services/time_service.dart';
 import '../../auth/services/auth_service.dart';
 
 class HomeController extends GetxController {
@@ -20,6 +21,7 @@ class HomeController extends GetxController {
   final notificationService = Get.put(NotificationService());
   var totalSavedMoney = 0.obs;
   ShakeDetector? shakeDetector;
+  final timeService = Get.find<TimeService>();
 
   static const String _kSavedMoneyKey = 'savedMoney';
 

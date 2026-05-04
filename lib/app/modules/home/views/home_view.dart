@@ -113,21 +113,40 @@ class HomeView extends GetView<HomeController> {
             builder: (context, snapshot) {
               final currency = CurrencyService();
               return Obx(() => Text(
-                    currency.formatFromIdr(controller.totalSavedMoney.value),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ));
+                currency.formatFromIdr(controller.totalSavedMoney.value),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+              ));
             },
           ),
           const SizedBox(height: 16),
+
+          // --- CHIP JAM DIGITAL REAL-TIME ---
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min, // Agar lebarnya menyesuaikan teks
+              children: [
+                const Icon(Icons.access_time, color: Colors.white, size: 16),
+                const SizedBox(width: 6),
+                // Bungkus dengan Obx agar detiknya berdetak di layar
+                Obx(() => Text(
+                  controller.timeService.formattedTime, // Memanggil fungsi get dari controller
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1.0, // Memberi jarak agar detik jam terlihat rapi
+                  ),
+                )),
+              ],
             ),
           ),
         ],

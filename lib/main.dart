@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'app/data/models/inventory_model.dart';
 import 'app/data/models/session_box.dart';
 import 'app/data/services/notification_service.dart';
+import 'app/data/services/time_service.dart';
 import 'app/modules/auth/services/auth_service.dart';
 import 'app/routes/app_pages.dart';
 
@@ -21,7 +22,7 @@ Future<void> main() async {
   await Hive.openBox('gamificationBox');
 
   final authService = Get.put(AuthService());
-
+  Get.put(TimeService());
   runApp(
     GetMaterialApp(
       title: "Application",

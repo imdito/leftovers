@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:leftovers/app/data/services/time_service.dart';
 import '../../../services/appwrite_service.dart';
 import '../../../data/services/currency_service.dart';
 import '../controllers/profile_controller.dart';
@@ -44,18 +45,18 @@ class ProfileView extends GetView<ProfileController> {
       ),
       child: Column(
         children: [
-            Obx(() => InkWell(
-              child: CircleAvatar(
-                radius: 50,
-                backgroundColor: Colors.white,
-                backgroundImage: controller.isLoading.value ? null
+          Obx(() => InkWell(
+            child: CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.white,
+              backgroundImage: controller.isLoading.value ? null
                   : controller.profilePhotoId.value.isNotEmpty
-                    ? NetworkImage(AppwriteService().getImageUrl(controller.profilePhotoId.value))
-                    : NetworkImage(AppwriteService().getImageUrl(controller.userId)),
+                  ? NetworkImage(AppwriteService().getImageUrl(controller.profilePhotoId.value))
+                  : NetworkImage(AppwriteService().getImageUrl(controller.userId)),
 
-              ),
-              onTap: () => controller.pickImage(),
-            )),
+            ),
+            onTap: () => controller.pickImage(),
+          )),
           const SizedBox(height: 15),
           Obx(() => Text(
             controller.userName.value,
@@ -92,6 +93,13 @@ class ProfileView extends GetView<ProfileController> {
             title: "Mata Uang",
             subtitle: "Ubah mata uang tampilan",
             onTap: () => _showCurrencyPicker(),
+          ),
+          // --- MENU ZONA WAKTU BARU ---
+          _menuTile(
+            icon: Icons.access_time,
+            title: "Zona Waktu",
+            subtitle: "Sesuaikan jam aplikasi",
+            onTap: () => _showTimeZonePicker(),
           ),
           _menuTile(
             icon: Icons.history,
@@ -197,6 +205,61 @@ class ProfileView extends GetView<ProfileController> {
                   Get.back();
                   Get.snackbar('Berhasil', 'Mata uang diubah ke $code');
                 },
+              );
+            }),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // --- FUNGSI BOTTOM SHEET ZONA WAKTU ---
+  void _showTimeZonePicker() {
+    // Ambil TimeService yang sudah jalan di memori
+    final timeService = Get.find<TimeService>();
+    final timeZones = ['Auto', 'WIB', 'WITA', 'WIT', 'UTC', 'BST'];
+
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Pilih Zona Waktu',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            // Gunakan Obx agar UI langsung bereaksi saat dipilih
+            Obx(() {
+              return Column(
+                children: timeZones.map((zone) {
+                  final isSelected = zone == timeService.selectedTimeZone.value;
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(
+                      isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                      color: const Color(0xFF2E7D32),
+                    ),
+                    title: Text(zone == 'Auto' ? 'Otomatis (Sesuai Lokasi)' : zone),
+                    onTap: () {
+                      // Ubah nilai zona waktu di service
+                      timeService.selectedTimeZone.value = zone;
+
+                      Get.back();
+                      Get.snackbar(
+                          'Berhasil',
+                          'Zona waktu diubah ke ${zone == 'Auto' ? 'Otomatis' : zone}'
+                      );
+                    },
+                  );
+                }).toList(),
               );
             }),
             const SizedBox(height: 10),
