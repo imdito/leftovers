@@ -474,8 +474,8 @@ class RecipeView extends GetView<RecipeController> {
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 0.85,
+          mainAxisSpacing: 25,
+          childAspectRatio: 0.65,
         ),
         itemCount: controller.recipes.length,
         itemBuilder: (_, i) => _buildRecipeCard(controller.recipes[i]),

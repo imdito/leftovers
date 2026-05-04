@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:leftovers/app/routes/app_pages.dart';
@@ -62,7 +63,7 @@ class RecipeController extends GetxController {
   final activeTab = 0.obs;
 
   // OpenRouter API key
-  static const _apiKey = 'API_KEY'; // ganti dengan key kamu
+  static final _apiKey =  dotenv.env['OPENROUTER_API_KEY'];
 
   // Urutan fallback: kalau model pertama rate-limited, otomatis coba model berikutnya
   static const _fallbackModels = [
