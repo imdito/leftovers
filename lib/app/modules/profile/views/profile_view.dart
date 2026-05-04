@@ -133,6 +133,7 @@ class ProfileView extends GetView<ProfileController> {
               ),
             ),
           ),
+          SizedBox(height: 20,)
         ],
       ),
     );
