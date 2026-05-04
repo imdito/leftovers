@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import '../../../data/models/inventory_model.dart';
+import '../../../data/services/currency_service.dart';
 import '../../../data/services/notification_service.dart';
 
 class InventoryController extends GetxController {
@@ -19,6 +20,7 @@ class InventoryController extends GetxController {
 
   // Variabel untuk form input
   final nameController = TextEditingController();
+  final priceController = TextEditingController();
   var selectedCategory = 'Sayur'.obs;
   var quantity = 1.obs;
   var selectedDate = Rx<DateTime?>(null);
@@ -73,22 +75,21 @@ class InventoryController extends GetxController {
   }
 
   Future<void> markCooked(InventoryItem item) async {
-    // Tambah uang terselamatkan (minimal: fixed per item, mengikuti HomeController)
-    final currentSaved = (gamificationBox.get(_kSavedMoneyKey) as int?) ?? 0;
-    final newSaved = currentSaved + 15000;
-    await gamificationBox.put(_kSavedMoneyKey, newSaved);
+    final int itemTotalPrice = (item.price) * (item.quantity);
 
-    // Tambah streak (minimal: +1 setiap kali item dimasak)
-    final currentStreak = (gamificationBox.get(_kStreakKey) as int?) ?? 0;
-    await gamificationBox.put(_kStreakKey, currentStreak + 1);
+    // Tambah uang terselamatkan sesuai harga item
+    final currentSaved = (gamificationBox.get(_kSavedMoneyKey) as int?) ?? 0;
+    final newSaved = currentSaved + itemTotalPrice;
+    await gamificationBox.put(_kSavedMoneyKey, newSaved);
 
     await item.delete();
     loadInventoryItems();
 
     Get.back();
+    final currency = CurrencyService(box: gamificationBox);
     Get.snackbar(
       'Mantap!',
-      '${item.name} ditandai sudah dimasak. +Rp 15.000 terselamatkan',
+      '${item.name} ditandai sudah dimasak. +${currency.formatFromIdr(itemTotalPrice)} terselamatkan',
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: CupertinoColors.systemGreen,
       colorText: CupertinoColors.white,
@@ -142,6 +143,19 @@ class InventoryController extends GetxController {
       return;
     }
 
+    final rawPrice = priceController.text.trim();
+    final parsedPrice = int.tryParse(rawPrice.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+    if (parsedPrice <= 0) {
+      Get.snackbar(
+        'Gagal',
+        'Harga harus diisi dan lebih dari 0!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: CupertinoColors.systemRed,
+        colorText: CupertinoColors.white,
+      );
+      return;
+    }
+
     if (selectedDate.value!.isBefore(DateTime.now())) {
       Get.snackbar(
         'Gagal',
@@ -170,9 +184,16 @@ class InventoryController extends GetxController {
       quantity: quantity.value,
       expirationDate: selectedDate.value!,
       category: selectedCategory.value,
+      price: parsedPrice,
     );
 
     await inventoryBox.add(newItem);
+
+    // reset form minimal
+    nameController.clear();
+    priceController.clear();
+    resetQuantity();
+    selectedDate.value = null;
 
     if (newItem.expirationDate.difference(DateTime.now()).inDays <= 3) {
       notificationService.showInstantNotification(title: "Peringatan !", body: "${newItem.name} akan kedaluwarsa pada ${DateFormat('d MMM').format(newItem.expirationDate)}");
@@ -198,6 +219,7 @@ class InventoryController extends GetxController {
 
   @override
   void onClose() {
+    priceController.dispose();
     super.onClose();
   }
 }

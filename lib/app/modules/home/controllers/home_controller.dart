@@ -14,10 +14,14 @@ import '../../auth/services/auth_service.dart';
 class HomeController extends GetxController {
   late final WebViewController webViewController;
   final Box<InventoryItem> inventoryBox = Hive.box<InventoryItem>('inventoryBox');
+  final Box gamificationBox = Hive.box('gamificationBox');
   var criticalItems = <InventoryItem>[].obs;
   final notificationService = Get.put(NotificationService());
   var totalSavedMoney = 0.obs;
   ShakeDetector? shakeDetector;
+
+  static const String _kSavedMoneyKey = 'savedMoney';
+
   @override
   void onInit() {
     super.onInit();
@@ -28,7 +32,6 @@ class HomeController extends GetxController {
     _initEasterEgg();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
       notificationService.requestPermission();
     });
 
@@ -37,10 +40,16 @@ class HomeController extends GetxController {
       loadHomeData();
     });
 
+    gamificationBox.watch().listen((event) {
+      if (event.key == _kSavedMoneyKey) {
+        loadHomeData();
+      }
+    });
+
     webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
-    // Langsung muat URL sumber dari iframe kamu
+      // Langsung muat URL sumber dari iframe kamu
       ..loadRequest(Uri.parse('https://zv1y2i8p.play.gamezop.com/g/H1be5Ef0Qp'));
   }
 
@@ -68,7 +77,7 @@ class HomeController extends GetxController {
     final now = DateTime.now();
 
     // --- GAMIFIKASI ---
-    totalSavedMoney.value = allItems.length * 15000;
+    totalSavedMoney.value = (gamificationBox.get(_kSavedMoneyKey) as int?) ?? 0;
 
     // --- FILTER MAKANAN KRITIS ---
     final almostExpired = allItems.where((item) {
@@ -83,8 +92,8 @@ class HomeController extends GetxController {
     // Ambil maksimal 3 item saja agar tampilan Home tidak kepanjangan
     criticalItems.assignAll(almostExpired.take(3).toList());
   }
-  void _initEasterEgg() {
 
+  void _initEasterEgg() {
     print("🚀 Memulai inisialisasi Easter Egg goyangan...");
     // Memulai pendeteksi goyangan secara otomatis
     shakeDetector = ShakeDetector.autoStart(
@@ -132,5 +141,4 @@ class HomeController extends GetxController {
       barrierDismissible: true,
     );
   }
-
 }

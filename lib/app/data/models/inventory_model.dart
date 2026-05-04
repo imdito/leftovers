@@ -19,11 +19,15 @@ class InventoryItem extends HiveObject {
   @HiveField(4)
   int id;
 
+  @HiveField(5)
+  int price;
+
   InventoryItem({
     required this.name,
     required this.quantity,
     required this.expirationDate,
     required this.category,
     required this.id,
+    required this.price,
   });
 }

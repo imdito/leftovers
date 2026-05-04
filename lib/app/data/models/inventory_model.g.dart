@@ -22,13 +22,14 @@ class InventoryItemAdapter extends TypeAdapter<InventoryItem> {
       expirationDate: fields[2] as DateTime,
       category: fields[3] as String,
       id: fields[4] as int,
+      price: (fields[5] as int?) ?? 15000,
     );
   }
 
   @override
   void write(BinaryWriter writer, InventoryItem obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class InventoryItemAdapter extends TypeAdapter<InventoryItem> {
       ..writeByte(3)
       ..write(obj.category)
       ..writeByte(4)
-      ..write(obj.id);
+      ..write(obj.id)
+      ..writeByte(5)
+      ..write(obj.price);
   }
 
   @override

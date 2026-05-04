@@ -110,10 +110,10 @@ class AuthLoginView extends GetView<LoginController> {
 
                         // Password Field
                         Obx(() => _buildPasswordField(
-                          controller: controller.passwordController,
-                          isHidden: controller.isPasswordHidden.value,
-                          onToggle: controller.togglePasswordVisibility,
-                        )),
+                              controller: controller.passwordController,
+                              isHidden: controller.isPasswordHidden.value,
+                              onToggle: controller.togglePasswordVisibility,
+                            )),
                         const SizedBox(height: 16),
 
                         // Remember Me & Forgot Password
@@ -125,13 +125,13 @@ class AuthLoginView extends GetView<LoginController> {
                               child: Row(
                                 children: [
                                   Obx(() => Checkbox(
-                                    value: controller.isRememberMe.value,
-                                    onChanged: (value) => controller.toggleRememberMe(),
-                                    activeColor: const Color(0xFF2E7D32),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                  )),
+                                        value: controller.isRememberMe.value,
+                                        onChanged: (value) => controller.toggleRememberMe(),
+                                        activeColor: const Color(0xFF2E7D32),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                      )),
                                   const Text(
                                     "Ingat saya",
                                     style: TextStyle(
@@ -177,60 +177,60 @@ class AuthLoginView extends GetView<LoginController> {
                         ),
                       );
                     },
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: Obx(() {
-                          final isLoading = controller.isLoading.value;
-                          return Container(
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFF2E7D32),
-                                  Color(0xFF1B5E20),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF2E7D32).withOpacity(0.3),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: Obx(() {
+                        final isLoading = controller.isLoading.value;
+                        return Container(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFF2E7D32),
+                                Color(0xFF1B5E20),
                               ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: isLoading ? null : controller.login,
-                                borderRadius: BorderRadius.circular(16),
-                                child: Center(
-                                  child: isLoading
-                                      ? const SizedBox(
-                                    height: 24,
-                                    width: 24,
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                      strokeWidth: 2.5,
-                                    ),
-                                  )
-                                      : const Text(
-                                    "Masuk",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF2E7D32).withOpacity(0.3),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: isLoading ? null : controller.login,
+                              borderRadius: BorderRadius.circular(16),
+                              child: Center(
+                                child: isLoading
+                                    ? const SizedBox(
+                                        height: 24,
+                                        width: 24,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2.5,
+                                        ),
+                                      )
+                                    : const Text(
+                                        "Masuk dengan Email",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
                               ),
                             ),
-                          );
-                        }),
-                      ),
+                          ),
+                        );
+                      }),
+                    ),
                   ),
                   const SizedBox(height: 24),
 
@@ -246,7 +246,7 @@ class AuthLoginView extends GetView<LoginController> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: Text(
-                          "atau",
+                          "atau masuk dengan",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
@@ -264,28 +264,20 @@ class AuthLoginView extends GetView<LoginController> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Social Login Buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildSocialButton(
-                          icon: Icons.login,
-                          label: "Google",
-                          onTap: () {},
-                          color: const Color(0xFF4285F4),
-                        ),
+                  // Biometric Login Button (Sidik Jari)
+                  Obx(() {
+                    final isLoading = controller.isLoading.value;
+                    return SizedBox(
+                      width: double.infinity,
+                      child: _buildSocialButton(
+                        icon: Icons.fingerprint,
+                        label: "Sidik Jari",
+                        onTap: isLoading ? () {} : controller.onBiometricLoginPressed,
+                        color: const Color(0xFF2E7D32),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildSocialButton(
-                          icon: Icons.public,
-                          label: "Email",
-                          onTap: () {},
-                          color: const Color(0xFF34A853),
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  }),
+
                   const SizedBox(height: 28),
 
                   // Register Link

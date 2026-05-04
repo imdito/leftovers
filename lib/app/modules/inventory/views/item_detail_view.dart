@@ -86,6 +86,8 @@ class ItemDetailView extends StatelessWidget {
                   const SizedBox(height: 8),
                   _rowInfo('Quantity', item.quantity.toString()),
                   const SizedBox(height: 8),
+                  _rowInfo('Harga', NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0).format(item.price)),
+                  const SizedBox(height: 8),
                   _rowInfo('Kedaluwarsa', DateFormat('dd MMM yyyy').format(item.expirationDate)),
                 ],
               ),

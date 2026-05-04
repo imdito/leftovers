@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import '../../../services/appwrite_service.dart';
+import '../../../data/services/currency_service.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -86,6 +88,12 @@ class ProfileView extends GetView<ProfileController> {
             },
           ),
           _menuTile(
+            icon: Icons.payments_outlined,
+            title: "Mata Uang",
+            subtitle: "Ubah mata uang tampilan",
+            onTap: () => _showCurrencyPicker(),
+          ),
+          _menuTile(
             icon: Icons.history,
             title: "Riwayat Penyelamatan",
             subtitle: "Lihat makanan yang berhasil diselamatkan",
@@ -137,6 +145,63 @@ class ProfileView extends GetView<ProfileController> {
         subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
         trailing: const Icon(Icons.chevron_right, size: 20),
         onTap: onTap,
+      ),
+    );
+  }
+
+  void _showCurrencyPicker() {
+    final box = Hive.box('gamificationBox');
+    final currencyService = CurrencyService(box: box);
+    final currentCode = currencyService.code;
+
+    final currencies = <Map<String, String>>[
+      {'code': 'IDR', 'symbol': 'Rp ', 'locale': 'id'},
+      {'code': 'USD', 'symbol': r'$ ', 'locale': 'en_US'},
+      {'code': 'EUR', 'symbol': '€ ', 'locale': 'de_DE'},
+      {'code': 'JPY', 'symbol': '¥ ', 'locale': 'ja_JP'},
+      {'code': 'GBP', 'symbol': '£ ', 'locale': 'en_GB'},
+      {'code': 'SGD', 'symbol': r'S$ ', 'locale': 'en_SG'},
+    ];
+
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Pilih Mata Uang',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            ...currencies.map((c) {
+              final code = c['code']!;
+              final symbol = c['symbol']!;
+              final locale = c['locale']!;
+              final selected = code == currentCode;
+
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(
+                  selected ? Icons.radio_button_checked : Icons.radio_button_off,
+                  color: const Color(0xFF2E7D32),
+                ),
+                title: Text('$code ($symbol)'),
+                onTap: () async {
+                  await currencyService.setCurrency(code: code, symbol: symbol, locale: locale);
+                  Get.back();
+                  Get.snackbar('Berhasil', 'Mata uang diubah ke $code');
+                },
+              );
+            }),
+            const SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }

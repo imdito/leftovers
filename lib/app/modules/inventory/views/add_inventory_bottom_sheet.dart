@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../data/services/currency_service.dart';
 import '../controllers/inventory_controller.dart';
 
 class AddInventoryBottomSheet extends GetView<InventoryController> {
@@ -8,6 +9,8 @@ class AddInventoryBottomSheet extends GetView<InventoryController> {
 
   @override
   Widget build(BuildContext context) {
+    final currency = CurrencyService();
+
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
@@ -35,6 +38,18 @@ class AddInventoryBottomSheet extends GetView<InventoryController> {
                 decoration: InputDecoration(
                   labelText: "Nama Makanan (mis: Dada Ayam)",
                   prefixIcon: const Icon(Icons.fastfood_outlined),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Input Harga
+              TextField(
+                controller: controller.priceController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Harga (${currency.symbol})",
+                  prefixIcon: const Icon(Icons.payments_outlined),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),

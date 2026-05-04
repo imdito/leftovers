@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import 'package:hive/hive.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import '../../../data/services/currency_service.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -107,43 +108,26 @@ class HomeView extends GetView<HomeController> {
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
           const SizedBox(height: 8),
-          Obx(() {
-            // Karena kita sudah punya package intl, kita pakai formatter
-            final formatCurrency = NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
-            return Text(
-              formatCurrency.format(controller.totalSavedMoney.value),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
-            );
-          }),
+          StreamBuilder(
+            stream: Hive.box('gamificationBox').watch(),
+            builder: (context, snapshot) {
+              final currency = CurrencyService();
+              return Obx(() => Text(
+                    currency.formatFromIdr(controller.totalSavedMoney.value),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ));
+            },
+          ),
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.local_fire_department,
-                  color: Colors.orangeAccent,
-                  size: 18,
-                ),
-                SizedBox(width: 4),
-                Text(
-                  "5 Hari tanpa Food Waste!",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
             ),
           ),
         ],
@@ -343,3 +327,4 @@ class HomeView extends GetView<HomeController> {
     );
   }
 }
+
