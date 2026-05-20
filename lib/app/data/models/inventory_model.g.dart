@@ -22,7 +22,7 @@ class InventoryItemAdapter extends TypeAdapter<InventoryItem> {
       expirationDate: fields[2] as DateTime,
       category: fields[3] as String,
       id: fields[4] as int,
-      price: (fields[5] as int?) ?? 15000,
+      price: (fields[5] as num?)?.toDouble() ?? 15000.0,
     );
   }
 

@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:async';
+import 'package:light/light.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,6 +15,10 @@ class ScanController extends GetxController {
   var imageFile = Rx<File?>(null);
   var detectedItems = <String>[].obs;
   var isLoading = false.obs;
+  
+  var luxValue = 0.obs;
+  Light? _light;
+  StreamSubscription? _subscription;
 
   late Interpreter interpreter;
   late List<String> labels;
@@ -24,6 +30,24 @@ class ScanController extends GetxController {
   void onInit() {
     super.onInit();
     loadModel();
+    startLightSensor();
+  }
+
+  void startLightSensor() {
+    _light = Light();
+    try {
+      _subscription = _light?.lightSensorStream.listen((int lux) {
+        luxValue.value = lux;
+      });
+    } catch (e) {
+      print("❌ ERROR startLightSensor: $e");
+    }
+  }
+
+  @override
+  void onClose() {
+    _subscription?.cancel();
+    super.onClose();
   }
 
   // =========================

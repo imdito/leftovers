@@ -21,7 +21,7 @@ class ProfileController extends GetxController {
   final ProfileService _profileService = Get.put(ProfileService());
   //logout
   final _authService = Get.find<AuthService>();
-  final _box = Hive.box('sessionbox');
+  final _box = Hive.box('sessionBox');
 
   var isLoading = false.obs;
   // Ambil nama pengguna dari Hive
@@ -37,7 +37,7 @@ class ProfileController extends GetxController {
 
   void getUserId(){
     isLoading.value = true;
-    final String token = Hive.box('sessionbox').get('token');
+    final String token = Hive.box('sessionBox').get('token');
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
     userId = decodedToken['id'].toString();
     isLoading.value = false;
@@ -66,7 +66,7 @@ class ProfileController extends GetxController {
 
       // 3. Update State & UI
       profilePhotoId.value = fileId;
-      Hive.box('sessionbox').put('profilePhotoId', fileId);
+      Hive.box('sessionBox').put('profilePhotoId', fileId);
 
       Get.snackbar("Sukses", "Foto profil diperbarui!");
     } catch (e) {

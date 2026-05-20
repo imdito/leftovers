@@ -6,7 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 class ProfileService extends GetxService {
   Future<void> syncPhotoIdToExpress(String fileId) async {
-    final String token = Hive.box('sessionbox').get('token');
+    final String token = Hive.box('sessionBox').get('token');
     final String baseUrl = dotenv.env['EXPRESS_API_URL']!;
 
     final response = await http.put(

@@ -43,6 +43,45 @@ class ScanView extends GetView<ScanController> {
 
             const SizedBox(height: 24),
 
+            // --- SMART CAMERA ASSISTANT (LIGHT SENSOR) ---
+            Obx(() {
+              final lux = controller.luxValue.value;
+              final isDim = lux < 15; // Ambang batas redup
+
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: isDim ? Colors.orange.shade50 : Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isDim ? Colors.orange.shade200 : Colors.green.shade200,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      isDim ? Icons.lightbulb_outline : Icons.wb_sunny,
+                      color: isDim ? Colors.orange.shade700 : Colors.green.shade700,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        isDim
+                            ? "⚠️ Ruangan redup ($lux lux). Disarankan gunakan flash agar deteksi AI akurat!"
+                            : "✅ Cahaya ruangan sangat baik ($lux lux) untuk memotret makanan!",
+                        style: TextStyle(
+                          color: isDim ? Colors.orange.shade900 : Colors.green.shade900,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+
+            const SizedBox(height: 24),
+
             // --- TOMBOL SCAN ---
             Obx(
               () => ElevatedButton.icon(

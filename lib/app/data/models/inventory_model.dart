@@ -20,7 +20,7 @@ class InventoryItem extends HiveObject {
   int id;
 
   @HiveField(5)
-  int price;
+  double price;
 
   InventoryItem({
     required this.name,

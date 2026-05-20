@@ -107,24 +107,23 @@ class CurrencyService {
   // ====================================================================
 
   /// Konversi IDR (storage) menjadi nominal sesuai currency user (display).
-  double convertFromIdr(int idrAmount) {
+  double convertFromIdr(double idrAmount) {
     final rates = ratesAgainstIdr;
     final rate = rates[code] ?? 1.0;
     return idrAmount * rate;
   }
 
   /// Format untuk DISPLAY: konversi dari IDR -> currency terpilih, lalu format.
-  String formatFromIdr(int idrAmount, {int decimalDigits = 0}) {
+  String formatFromIdr(double idrAmount, {int decimalDigits = 2}) {
     final converted = convertFromIdr(idrAmount);
     return formatter(decimalDigits: decimalDigits).format(converted);
   }
 
   /// Konversi dari nominal user (dalam mata uang terpilih) ke IDR untuk disimpan.
-  int convertSelectedToIdr(double amountInSelected) {
+  double convertSelectedToIdr(double amountInSelected) {
     final rates = ratesAgainstIdr;
     final rate = rates[code] ?? 1.0;
-    if (rate == 0) return amountInSelected.round();
-    final idr = amountInSelected / rate;
-    return idr.round();
+    if (rate == 0) return amountInSelected;
+    return amountInSelected / rate;
   }
 }

@@ -19,7 +19,7 @@ class HomeController extends GetxController {
   final Box gamificationBox = Hive.box('gamificationBox');
   var criticalItems = <InventoryItem>[].obs;
   final notificationService = Get.find<NotificationService>();
-  var totalSavedMoney = 0.obs;
+  var totalSavedMoney = 0.0.obs;
   ShakeDetector? shakeDetector;
   final timeService = Get.find<TimeService>();
 
@@ -83,7 +83,7 @@ class HomeController extends GetxController {
     final now = DateTime.now();
 
     // --- GAMIFIKASI ---
-    totalSavedMoney.value = (gamificationBox.get(_kSavedMoneyKey) as int?) ?? 0;
+    totalSavedMoney.value = (gamificationBox.get(_kSavedMoneyKey) as num?)?.toDouble() ?? 0.0;
 
     // --- FILTER MAKANAN KRITIS ---
     final almostExpired = allItems.where((item) {

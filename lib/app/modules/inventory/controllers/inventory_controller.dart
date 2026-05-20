@@ -8,7 +8,9 @@ import '../../../data/services/notification_service.dart';
 
 class InventoryController extends GetxController {
   // Inisialisasi Hive Box untuk InventoryItem
-  final Box<InventoryItem> inventoryBox = Hive.box<InventoryItem>('inventoryBox');
+  final Box<InventoryItem> inventoryBox = Hive.box<InventoryItem>(
+    'inventoryBox',
+  );
 
   // Box sederhana untuk data gamifikasi (uang terselamatkan + streak)
   final Box gamificationBox = Hive.box('gamificationBox');
@@ -24,7 +26,14 @@ class InventoryController extends GetxController {
   var selectedCategory = 'Sayur'.obs;
   var quantity = 1.obs;
   var selectedDate = Rx<DateTime?>(null);
-  final List<String> categories = ['Sayur', 'Buah', 'Daging', 'Dairy', 'Bumbu', 'Lainnya'];
+  final List<String> categories = [
+    'Sayur',
+    'Buah',
+    'Daging',
+    'Dairy',
+    'Bumbu',
+    'Lainnya',
+  ];
 
   // Variabel untuk pencarian
   var allItems = <Map<String, dynamic>>[].obs;
@@ -65,7 +74,8 @@ class InventoryController extends GetxController {
   }
 
   void deleteInventoryItem(InventoryItem item) async {
-    await item.delete(); // Karena pakai HiveObject, bisa langsung panggil .delete()
+    await item
+        .delete(); // Karena pakai HiveObject, bisa langsung panggil .delete()
     loadInventoryItems(); // Refresh tampilan
     Get.snackbar(
       'Terhapus',
@@ -75,10 +85,11 @@ class InventoryController extends GetxController {
   }
 
   Future<void> markCooked(InventoryItem item) async {
-    final int itemTotalPrice = (item.price) * (item.quantity);
+    final double itemTotalPrice = item.price * item.quantity;
 
     // Tambah uang terselamatkan sesuai harga item
-    final currentSaved = (gamificationBox.get(_kSavedMoneyKey) as int?) ?? 0;
+    final currentSaved =
+        (gamificationBox.get(_kSavedMoneyKey) as num?)?.toDouble() ?? 0.0;
     final newSaved = currentSaved + itemTotalPrice;
     await gamificationBox.put(_kSavedMoneyKey, newSaved);
 
@@ -90,7 +101,7 @@ class InventoryController extends GetxController {
     Get.snackbar(
       'Mantap!',
       '${item.name} ditandai sudah dimasak. +${currency.formatFromIdr(itemTotalPrice)} terselamatkan',
-      snackPosition: SnackPosition.BOTTOM,
+      snackPosition: SnackPosition.TOP,
       backgroundColor: CupertinoColors.systemGreen,
       colorText: CupertinoColors.white,
     );
@@ -106,8 +117,8 @@ class InventoryController extends GetxController {
     Get.back();
     Get.snackbar(
       'Sayang sekali',
-      '${item.name} terbuang. Streak di-reset',
-      snackPosition: SnackPosition.BOTTOM,
+      '${item.name} terbuang.',
+      snackPosition: SnackPosition.TOP,
       backgroundColor: CupertinoColors.systemRed,
       colorText: CupertinoColors.white,
     );
@@ -137,7 +148,7 @@ class InventoryController extends GetxController {
       Get.snackbar(
         'Gagal',
         'Nama dan tanggal kedaluwarsa harus diisi!',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: CupertinoColors.systemRed,
         colorText: CupertinoColors.white,
       );
@@ -145,10 +156,12 @@ class InventoryController extends GetxController {
     }
 
     final rawPrice = priceController.text.trim();
-    final parsedPrice = double.tryParse(rawPrice.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-    int convertedPrice = parsedPrice.toInt();
-    if(currency.symbol != 'Rp ') {
-      // Jika simbol bukan Rp, asumsikan input sudah dalam mata uang yang benar dan konversi ke IDR
+    // Mendukung input desimal dengan titik (.) maupun koma (,)
+    final normalizedPrice = rawPrice.replaceAll(',', '.');
+    final parsedPrice = double.tryParse(normalizedPrice) ?? 0.0;
+    double convertedPrice = parsedPrice;
+    if (currency.symbol != 'Rp ') {
+      // Jika simbol bukan Rp, konversi dari mata uang terpilih ke IDR
       convertedPrice = currency.convertSelectedToIdr(parsedPrice);
     }
 
@@ -156,7 +169,7 @@ class InventoryController extends GetxController {
       Get.snackbar(
         'Gagal',
         'Harga harus diisi dan lebih dari 0!',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: CupertinoColors.systemRed,
         colorText: CupertinoColors.white,
       );
@@ -167,7 +180,7 @@ class InventoryController extends GetxController {
       Get.snackbar(
         'Gagal',
         'Tanggal kedaluwarsa tidak boleh di masa lalu!',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: CupertinoColors.systemRed,
         colorText: CupertinoColors.white,
       );
@@ -178,7 +191,7 @@ class InventoryController extends GetxController {
       Get.snackbar(
         'Gagal',
         'Kuantitas harus lebih dari 0!',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: CupertinoColors.systemRed,
         colorText: CupertinoColors.white,
       );
@@ -186,7 +199,8 @@ class InventoryController extends GetxController {
     }
 
     final newItem = InventoryItem(
-      id: DateTime.now().millisecondsSinceEpoch, // ID unik berdasarkan timestamp
+      id: DateTime.now()
+          .millisecondsSinceEpoch, // ID unik berdasarkan timestamp
       name: nameController.text,
       quantity: quantity.value,
       expirationDate: selectedDate.value!,
@@ -203,12 +217,17 @@ class InventoryController extends GetxController {
     selectedDate.value = null;
 
     if (newItem.expirationDate.difference(DateTime.now()).inDays <= 3) {
-      notificationService.showInstantNotification(title: "Peringatan !", body: "${newItem.name} akan kedaluwarsa pada ${DateFormat('d MMM').format(newItem.expirationDate)}");
+      notificationService.showInstantNotification(
+        title: "Peringatan !",
+        body:
+            "${newItem.name} akan kedaluwarsa pada ${DateFormat('d MMM').format(newItem.expirationDate)}",
+      );
     } else {
       notificationService.scheduleNotification(
         id: newItem.id,
         title: "Peringatan !",
-        body: "${newItem.name} akan kedaluwarsa pada ${DateFormat('d MMM').format(newItem.expirationDate)}",
+        body:
+            "${newItem.name} akan kedaluwarsa pada ${DateFormat('d MMM').format(newItem.expirationDate)}",
         scheduledTime: newItem.expirationDate.subtract(const Duration(days: 3)),
       );
     }
@@ -218,7 +237,7 @@ class InventoryController extends GetxController {
     Get.snackbar(
       'Berhasil',
       '${newItem.name} berhasil ditambahkan ke kulkas',
-      snackPosition: SnackPosition.BOTTOM,
+      snackPosition: SnackPosition.TOP,
       backgroundColor: CupertinoColors.systemGreen,
       colorText: CupertinoColors.white,
     );

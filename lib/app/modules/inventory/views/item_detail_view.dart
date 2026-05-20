@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
 import '../../../data/models/inventory_model.dart';
+import '../../../data/services/currency_service.dart';
 import '../controllers/inventory_controller.dart';
 
 class ItemDetailView extends StatelessWidget {
@@ -10,8 +12,6 @@ class ItemDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final InventoryController controller = Get.find<InventoryController>();
-
     final args = Get.arguments;
     final InventoryItem item = args as InventoryItem;
 
@@ -86,7 +86,11 @@ class ItemDetailView extends StatelessWidget {
                   const SizedBox(height: 8),
                   _rowInfo('Quantity', item.quantity.toString()),
                   const SizedBox(height: 8),
-                  _rowInfo('Harga', NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0).format(item.price)),
+                  _rowInfo('Harga', () {
+                    final gamBox = Hive.box('gamificationBox');
+                    final currency = CurrencyService(box: gamBox);
+                    return currency.formatFromIdr(item.price);
+                  }()),
                   const SizedBox(height: 8),
                   _rowInfo('Kedaluwarsa', DateFormat('dd MMM yyyy').format(item.expirationDate)),
                 ],

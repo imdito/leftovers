@@ -46,9 +46,10 @@ class AddInventoryBottomSheet extends GetView<InventoryController> {
               // Input Harga
               TextField(
                 controller: controller.priceController,
-                keyboardType: TextInputType.number,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
                   labelText: "Harga (${currency.symbol})",
+                  hintText: "contoh: 5.7",
                   prefixIcon: const Icon(Icons.payments_outlined),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),

@@ -57,6 +57,7 @@ dependencies:
   url_launcher: ^6.3.0       # Buka navigasi eksternal
   permission_handler: ^11.3.0
   shake: ^3.0.0
+  light: ^5.0.0
 
 dev_dependencies:
   flutter_test:

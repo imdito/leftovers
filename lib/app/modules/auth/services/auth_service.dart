@@ -6,7 +6,7 @@ import 'package:local_auth/local_auth.dart';
 import '../../../routes/app_pages.dart';
 
 class AuthService extends GetxService {
-  final _box = Hive.box('sessionbox');
+  final _box = Hive.box('sessionBox');
   final LocalAuthentication _auth = LocalAuthentication();
 
   // Ambil data sesi
