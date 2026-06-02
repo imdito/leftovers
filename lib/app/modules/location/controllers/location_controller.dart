@@ -56,8 +56,6 @@ class LocationController extends GetxController {
   final errorMessage = ''.obs;
   final selectedPlace = Rxn<NearbyPlace>();
 
-  // Emulator Android: 10.0.2.2 → localhost komputer
-  // Device fisik: IP komputer kamu, misal 192.168.1.x
   final String baseUrl = dotenv.env['EXPRESS_API_URL']!;
   static const _radiusMeters = 20000;
 

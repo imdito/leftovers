@@ -4,7 +4,6 @@ import 'package:light/light.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:leftovers/app/routes/app_pages.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
@@ -15,7 +14,7 @@ class ScanController extends GetxController {
   var imageFile = Rx<File?>(null);
   var detectedItems = <String>[].obs;
   var isLoading = false.obs;
-  
+
   var luxValue = 0.obs;
   Light? _light;
   StreamSubscription? _subscription;

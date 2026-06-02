@@ -1,10 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:leftovers/app/modules/profile/controllers/profile_service.dart';
@@ -12,7 +8,6 @@ import '../../../services/appwrite_service.dart';
 import '../../auth/services/auth_service.dart';
 
 class ProfileController extends GetxController {
-
   //profile
   final AppwriteService _appwrite = AppwriteService();
   final ImagePicker _picker = ImagePicker();
@@ -35,7 +30,7 @@ class ProfileController extends GetxController {
     getUserId();
   }
 
-  void getUserId(){
+  void getUserId() {
     isLoading.value = true;
     final String token = Hive.box('sessionBox').get('token');
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
@@ -53,7 +48,10 @@ class ProfileController extends GetxController {
 
       if (pickedFile == null) return;
       // 1. Upload ke Appwrite
-      final String? fileId = await _appwrite.uploadProfileImage(pickedFile, userId);
+      final String? fileId = await _appwrite.uploadProfileImage(
+        pickedFile,
+        userId,
+      );
       if (fileId == null) throw Exception("Upload Appwrite Gagal");
 
       // 2. Sinkronisasi ke Express (Panggil dari ProfileService)

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
-import 'package:latlong2/latlong.dart';
 import '../controllers/location_controller.dart';
 import 'package:leftovers/app/widgets/app_bottom_navbar.dart';
 
@@ -143,7 +142,7 @@ class LocationView extends GetView<LocationController> {
         options: MapOptions(
           initialCenter: pos,
           initialZoom: 14,
-          onTap: (_, __) => controller.selectedPlace.value = null,
+          onTap: (_, _) => controller.selectedPlace.value = null,
         ),
         children: [
           TileLayer(

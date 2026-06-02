@@ -15,7 +15,9 @@ import '../../auth/services/auth_service.dart';
 
 class HomeController extends GetxController {
   late final WebViewController webViewController;
-  final Box<InventoryItem> inventoryBox = Hive.box<InventoryItem>('inventoryBox');
+  final Box<InventoryItem> inventoryBox = Hive.box<InventoryItem>(
+    'inventoryBox',
+  );
   final Box gamificationBox = Hive.box('gamificationBox');
   var criticalItems = <InventoryItem>[].obs;
   final notificationService = Get.find<NotificationService>();
@@ -50,18 +52,16 @@ class HomeController extends GetxController {
     });
 
     final currencyService = CurrencyService();
-    currencyService.fetchAndSaveLatestRates(); // Biarkan berjalan di background tanpa await
+    currencyService
+        .fetchAndSaveLatestRates(); // Biarkan berjalan di background tanpa await
 
     webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
       // Langsung muat URL sumber dari iframe kamu
-      ..loadRequest(Uri.parse('https://zv1y2i8p.play.gamezop.com/g/H1be5Ef0Qp'));
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
+      ..loadRequest(
+        Uri.parse('https://zv1y2i8p.play.gamezop.com/g/H1be5Ef0Qp'),
+      );
   }
 
   @override
@@ -83,7 +83,8 @@ class HomeController extends GetxController {
     final now = DateTime.now();
 
     // --- GAMIFIKASI ---
-    totalSavedMoney.value = (gamificationBox.get(_kSavedMoneyKey) as num?)?.toDouble() ?? 0.0;
+    totalSavedMoney.value =
+        (gamificationBox.get(_kSavedMoneyKey) as num?)?.toDouble() ?? 0.0;
 
     // --- FILTER MAKANAN KRITIS ---
     final almostExpired = allItems.where((item) {
@@ -103,7 +104,8 @@ class HomeController extends GetxController {
     print("🚀 Memulai inisialisasi Easter Egg goyangan...");
     // Memulai pendeteksi goyangan secara otomatis
     shakeDetector = ShakeDetector.autoStart(
-      shakeThresholdGravity: 3, // Sensitivitas goyangan (makin kecil makin sensitif)
+      shakeThresholdGravity:
+          3, // Sensitivitas goyangan (makin kecil makin sensitif)
       onPhoneShake: (ShakeEvent event) {
         print("Hp Bergoyang");
         // Cegah dialog muncul berkali-kali kalau HP digoyang terus-terusan
@@ -123,13 +125,13 @@ class HomeController extends GetxController {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                '😵‍💫',
-                style: TextStyle(fontSize: 100),
-              ),
+              const Text('😵‍💫', style: TextStyle(fontSize: 100)),
               const SizedBox(height: 10),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.7),
                   borderRadius: BorderRadius.circular(20),

@@ -102,12 +102,17 @@ class RecipeController extends GetxController {
 
   // Urutan fallback: kalau model pertama rate-limited, otomatis coba model berikutnya
   static const _fallbackModels = [
-    'google/gemma-3-27b-it:free',
-    'google/gemma-3n-e4b-it:free',
-    'google/gemma-3-12b-it:free',
-    'meta-llama/llama-3.2-3b-instruct:free',
-    'qwen/qwen3-next-80b-a3b-instruct:free',
+    // cepat + pintar untuk JSON
+    'google/gemini-2.0-flash-exp:free',
+    'qwen/qwen3-14b:free',
+    'z-ai/glm-4.5-air:free',
+
+    // fallback kualitas
     'openai/gpt-oss-20b:free',
+    'mistralai/mistral-7b-instruct:free',
+
+    // emergency fallback
+    'meta-llama/llama-3.2-3b-instruct:free',
   ];
 
   @override
@@ -154,7 +159,7 @@ class RecipeController extends GetxController {
           '''
 Kamu adalah chef profesional Indonesia. Berdasarkan bahan-bahan berikut yang ada di rumah dan mungkin akan segera basi: $bahan
 
-Berikan 6 rekomendasi resep masakan yang bisa dibuat dari bahan-bahan tersebut (boleh kombinasi dengan bahan dapur umum seperti garam, minyak, bawang).
+Berikan 3 rekomendasi resep masakan yang bisa dibuat dari bahan-bahan tersebut (boleh kombinasi dengan bahan dapur umum seperti garam, minyak, bawang).
 
 PENTING: Balas HANYA dengan JSON valid, tanpa teks lain, tanpa markdown, tanpa backtick.
 
@@ -192,7 +197,7 @@ Format JSON yang harus dikembalikan:
     try {
       final prompt =
           '''
-Kamu adalah chef profesional Indonesia. Berikan 6 resep masakan berdasarkan kata kunci: "$query"
+Kamu adalah chef profesional Indonesia. Berikan 3 resep masakan berdasarkan kata kunci: "$query"
 
 PENTING: Balas HANYA dengan JSON valid, tanpa teks lain, tanpa markdown, tanpa backtick.
 
@@ -253,10 +258,13 @@ Format JSON yang harus dikembalikan:
   // ─── OpenRouter API call dengan fallback otomatis ────
   Future<String> _callOpenRouterAPI(String prompt) async {
     final url = Uri.parse('https://openrouter.ai/api/v1/chat/completions');
-    Exception? lastError;
+
+    Object? lastError;
 
     for (final model in _fallbackModels) {
       try {
+        debugPrint('🔄 Trying model: $model');
+
         final response = await http
             .post(
               url,
@@ -267,35 +275,39 @@ Format JSON yang harus dikembalikan:
               body: json.encode({
                 'model': model,
                 'max_tokens': 2000,
+                'temperature': 0.7,
                 'messages': [
                   {'role': 'user', 'content': prompt},
                 ],
               }),
             )
-            .timeout(const Duration(seconds: 30));
+            .timeout(const Duration(seconds: 60));
 
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
+
+          debugPrint('✅ Success with $model');
+
           return data['choices'][0]['message']['content'];
-        } else if (response.statusCode == 429) {
-          lastError = Exception('Rate limited: $model');
-          continue;
-        } else {
-          throw Exception(
-            'API error: ${response.statusCode} - ${response.body}',
-          );
         }
+
+        debugPrint('❌ $model failed: ${response.statusCode}');
+
+        lastError = 'HTTP ${response.statusCode}: ${response.body}';
+
+        continue;
       } catch (e) {
-        if (e is Exception && e.toString().contains('Rate limited')) {
-          lastError = e;
-          continue;
-        }
-        rethrow;
+        debugPrint('❌ $model error: $e');
+
+        lastError = e;
+
+        // INI YANG PENTING
+        // lanjut model berikutnya
+        continue;
       }
     }
 
-    throw lastError ??
-        Exception('Semua model sedang tidak tersedia, coba lagi nanti.');
+    throw Exception('Semua model gagal. Last error: $lastError');
   }
 
   // ─── Parse JSON + fetch gambar paralel ────────────────
@@ -305,6 +317,13 @@ Format JSON yang harus dikembalikan:
           .replaceAll('```json', '')
           .replaceAll('```', '')
           .trim();
+
+      final start = cleaned.indexOf('{');
+      final end = cleaned.lastIndexOf('}');
+
+      if (start != -1 && end != -1) {
+        cleaned = cleaned.substring(start, end + 1);
+      }
 
       final data = json.decode(cleaned);
 
