@@ -31,7 +31,7 @@ class Recipe {
   factory Recipe.fromJson(Map<String, dynamic> json) {
     return Recipe(
       name: json['name'] ?? '',
-      imageUrl: '', // diisi setelah fetch Pixabay
+      imageUrl: '',
       emoji: json['emoji'] ?? '🍽️',
       description: json['description'] ?? '',
       ingredients: List<String>.from(json['ingredients'] ?? []),
@@ -86,32 +86,26 @@ class RecipeController extends GetxController {
   final errorMessage = ''.obs;
   final searchQuery = ''.obs;
 
-  // Input bahan dari user
   final ingredientController = TextEditingController();
   final ingredients = <String>[].obs;
 
-  // Search resep by nama
   final searchController = TextEditingController();
 
-  // Tab: 0 = dari bahan, 1 = cari resep
   final activeTab = 0.obs;
 
   // API keys
+  static final _groqKey = dotenv.env['GROQ_API_KEY'];
+  static final _geminiKey = dotenv.env['GEMINI_API_KEY'];
   static final _apiKey = dotenv.env['OPENROUTER_API_KEY'];
   static final _pixabayKey = dotenv.env['PIXABAY_API_KEY'];
 
-  // Urutan fallback: kalau model pertama rate-limited, otomatis coba model berikutnya
+  // OpenRouter fallback models
   static const _fallbackModels = [
-    // cepat + pintar untuk JSON
     'google/gemini-2.0-flash-exp:free',
     'qwen/qwen3-14b:free',
     'z-ai/glm-4.5-air:free',
-
-    // fallback kualitas
     'openai/gpt-oss-20b:free',
     'mistralai/mistral-7b-instruct:free',
-
-    // emergency fallback
     'meta-llama/llama-3.2-3b-instruct:free',
   ];
 
@@ -167,7 +161,7 @@ Format JSON yang harus dikembalikan:
 {"recipes":[{"name":"Nama Masakan","emoji":"🍛","description":"Deskripsi singkat 1 kalimat","ingredients":["bahan 1 secukupnya","bahan 2 100gr"],"steps":["Langkah 1","Langkah 2","Langkah 3"],"cook_time":"20 menit","difficulty":"Mudah","category":"Masakan Indonesia"}]}
 ''';
 
-      final response = await _callOpenRouterAPI(prompt);
+      final response = await _callAI(prompt);
       await _parseAndSetRecipes(response);
     } catch (e) {
       errorMessage.value = 'Gagal generate resep: $e';
@@ -205,7 +199,7 @@ Format JSON yang harus dikembalikan:
 {"recipes":[{"name":"Nama Masakan","emoji":"🍛","description":"Deskripsi singkat 1 kalimat","ingredients":["bahan 1 secukupnya","bahan 2 100gr"],"steps":["Langkah 1","Langkah 2","Langkah 3"],"cook_time":"20 menit","difficulty":"Mudah","category":"Masakan Indonesia"}]}
 ''';
 
-      final response = await _callOpenRouterAPI(prompt);
+      final response = await _callAI(prompt);
       await _parseAndSetRecipes(response);
     } catch (e) {
       errorMessage.value = 'Gagal mencari resep: $e';
@@ -214,7 +208,7 @@ Format JSON yang harus dikembalikan:
     }
   }
 
-  // ─── 4. Get detail resep lengkap ─────────────────────
+  // ─── 4. Get detail resep ──────────────────────────────
   Future<void> getRecipeDetail(Recipe recipe) async {
     print('>>> tap registered: ${recipe.name}');
     selectedRecipe.value = recipe;
@@ -222,11 +216,167 @@ Format JSON yang harus dikembalikan:
     Get.toNamed(Routes.RECIPE_DETAIL);
   }
 
+  // ─── AI Orchestrator: Groq → Gemini → OpenRouter ──────
+  Future<String> _callAI(String prompt) async {
+    // 1. Groq (primary — cepat & generous free tier)
+    try {
+      final result = await _callGroqAPI(prompt);
+      debugPrint('✅ Groq success');
+      return result;
+    } catch (e) {
+      debugPrint('⚠️ Groq failed: $e — trying Gemini');
+    }
+
+    // 2. Gemini (secondary)
+    try {
+      final result = await _callGeminiAPI(prompt);
+      debugPrint('✅ Gemini success');
+      return result;
+    } catch (e) {
+      debugPrint('⚠️ Gemini failed: $e — falling back to OpenRouter');
+    }
+
+    // 3. OpenRouter (last resort)
+    return _callOpenRouterAPI(prompt);
+  }
+
+  // ─── Groq API call (primary) ──────────────────────────
+  Future<String> _callGroqAPI(String prompt) async {
+    if (_groqKey == null || _groqKey!.isEmpty) {
+      throw Exception('Groq API key tidak ditemukan');
+    }
+
+    final url = Uri.parse('https://api.groq.com/openai/v1/chat/completions');
+
+    final response = await http
+        .post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $_groqKey',
+          },
+          body: json.encode({
+            'model': 'llama-3.3-70b-versatile',
+            'max_tokens': 2000,
+            'temperature': 0.7,
+            'messages': [
+              {'role': 'user', 'content': prompt},
+            ],
+          }),
+        )
+        .timeout(const Duration(seconds: 30));
+
+    if (response.statusCode != 200) {
+      throw Exception('Groq HTTP ${response.statusCode}: ${response.body}');
+    }
+
+    final data = json.decode(response.body);
+    final text = data['choices']?[0]?['message']?['content'] as String?;
+
+    if (text == null || text.isEmpty) {
+      throw Exception('Groq: respons kosong');
+    }
+
+    return text;
+  }
+
+  // ─── Gemini API call (secondary) ─────────────────────
+  Future<String> _callGeminiAPI(String prompt) async {
+    if (_geminiKey == null || _geminiKey!.isEmpty) {
+      throw Exception('Gemini API key tidak ditemukan');
+    }
+
+    const model = 'gemini-2.0-flash';
+    final url = Uri.parse(
+      'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$_geminiKey',
+    );
+
+    final response = await http
+        .post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'contents': [
+              {
+                'parts': [
+                  {'text': prompt},
+                ],
+              },
+            ],
+            'generationConfig': {'maxOutputTokens': 2000, 'temperature': 0.7},
+          }),
+        )
+        .timeout(const Duration(seconds: 30));
+
+    if (response.statusCode != 200) {
+      throw Exception('Gemini HTTP ${response.statusCode}: ${response.body}');
+    }
+
+    final data = json.decode(response.body);
+
+    final candidates = data['candidates'] as List?;
+    if (candidates == null || candidates.isEmpty) {
+      throw Exception('Gemini: respons kosong / diblokir safety filter');
+    }
+
+    final text = candidates[0]['content']?['parts']?[0]?['text'] as String?;
+    if (text == null || text.isEmpty) {
+      throw Exception('Gemini: teks respons null');
+    }
+
+    return text;
+  }
+
+  // ─── OpenRouter API call (last resort) ───────────────
+  Future<String> _callOpenRouterAPI(String prompt) async {
+    final url = Uri.parse('https://openrouter.ai/api/v1/chat/completions');
+    Object? lastError;
+
+    for (final model in _fallbackModels) {
+      try {
+        debugPrint('🔄 Trying OpenRouter model: $model');
+
+        final response = await http
+            .post(
+              url,
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer $_apiKey',
+              },
+              body: json.encode({
+                'model': model,
+                'max_tokens': 2000,
+                'temperature': 0.7,
+                'messages': [
+                  {'role': 'user', 'content': prompt},
+                ],
+              }),
+            )
+            .timeout(const Duration(seconds: 60));
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          debugPrint('✅ OpenRouter success with $model');
+          return data['choices'][0]['message']['content'];
+        }
+
+        debugPrint('❌ $model failed: ${response.statusCode}');
+        lastError = 'HTTP ${response.statusCode}: ${response.body}';
+        continue;
+      } catch (e) {
+        debugPrint('❌ $model error: $e');
+        lastError = e;
+        continue;
+      }
+    }
+
+    throw Exception('Semua model gagal. Last error: $lastError');
+  }
+
   // ─── Pixabay image search ─────────────────────────────
   Future<String> _searchFoodImage(String recipeName) async {
     if (_pixabayKey == null || _pixabayKey!.isEmpty) return '';
     try {
-      // Coba query bahasa Indonesia dulu, fallback ke English
       for (final query in [recipeName, '$recipeName food']) {
         final url = Uri.parse(
           'https://pixabay.com/api/'
@@ -252,62 +402,7 @@ Format JSON yang harus dikembalikan:
         }
       }
     } catch (_) {}
-    return ''; // fallback ke emoji di view
-  }
-
-  // ─── OpenRouter API call dengan fallback otomatis ────
-  Future<String> _callOpenRouterAPI(String prompt) async {
-    final url = Uri.parse('https://openrouter.ai/api/v1/chat/completions');
-
-    Object? lastError;
-
-    for (final model in _fallbackModels) {
-      try {
-        debugPrint('🔄 Trying model: $model');
-
-        final response = await http
-            .post(
-              url,
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer $_apiKey',
-              },
-              body: json.encode({
-                'model': model,
-                'max_tokens': 2000,
-                'temperature': 0.7,
-                'messages': [
-                  {'role': 'user', 'content': prompt},
-                ],
-              }),
-            )
-            .timeout(const Duration(seconds: 60));
-
-        if (response.statusCode == 200) {
-          final data = json.decode(response.body);
-
-          debugPrint('✅ Success with $model');
-
-          return data['choices'][0]['message']['content'];
-        }
-
-        debugPrint('❌ $model failed: ${response.statusCode}');
-
-        lastError = 'HTTP ${response.statusCode}: ${response.body}';
-
-        continue;
-      } catch (e) {
-        debugPrint('❌ $model error: $e');
-
-        lastError = e;
-
-        // INI YANG PENTING
-        // lanjut model berikutnya
-        continue;
-      }
-    }
-
-    throw Exception('Semua model gagal. Last error: $lastError');
+    return '';
   }
 
   // ─── Parse JSON + fetch gambar paralel ────────────────
@@ -327,7 +422,6 @@ Format JSON yang harus dikembalikan:
 
       final data = json.decode(cleaned);
 
-      // Tampilkan resep dulu tanpa gambar (cepat)
       final rawList = (data['recipes'] as List)
           .map((r) => Recipe.fromJson(r))
           .toList();
@@ -338,12 +432,10 @@ Format JSON yang harus dikembalikan:
         return;
       }
 
-      // Fetch semua gambar secara paralel di background
       final imageUrls = await Future.wait(
         rawList.map((r) => _searchFoodImage(r.name)),
       );
 
-      // Update list dengan gambar yang sudah dapat
       final updatedList = rawList.asMap().entries.map((entry) {
         return entry.value.copyWith(imageUrl: imageUrls[entry.key]);
       }).toList();
